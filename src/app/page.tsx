@@ -4,6 +4,32 @@ import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/product-card';
 import { getProducts } from '@/lib/data';
 import { PlaceHolderImages, getImage } from '@/lib/placeholder-images';
+import { Leaf, Waves, Thermometer, Droplets } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+
+const features = [
+  {
+    icon: <Droplets className="h-8 w-8 text-primary" />,
+    title: "Unmatched Softness",
+    description: "Our double-gauze muslin gets softer with every wash, providing a gentle, luxurious feel against your skin."
+  },
+  {
+    icon: <Waves className="h-8 w-8 text-primary" />,
+    title: "Exceptionally Breathable",
+    description: "The open weave of muslin allows for superior airflow, keeping you cool and comfortable in warmer weather."
+  },
+  {
+    icon: <Thermometer className="h-8 w-8 text-primary" />,
+    title: "Naturally Regulating",
+    description: "Muslin is a lightweight insulator, helping you stay warm in the cool and cool in the heat."
+  },
+  {
+    icon: <Leaf className="h-8 w-8 text-primary" />,
+    title: "Eco-Friendly & Sustainable",
+    description: "Made from natural fibers and colored with plant-based dyes, our fabric is kind to the earth."
+  }
+];
+
 
 export default async function Home() {
   const products = await getProducts();
@@ -59,7 +85,33 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="relative py-20 md:py-32 bg-secondary/50">
+      <section className="py-16 md:py-24 bg-secondary/50">
+        <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold mb-2">The Magic of Muslin</h2>
+                <p className="text-muted-foreground max-w-xl mx-auto">
+                    More than just fabric, it's a feeling. Discover the qualities that make our muslin special.
+                </p>
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature) => (
+              <Card key={feature.title} className="text-center border-0 bg-transparent shadow-none">
+                <CardHeader>
+                  <div className="mx-auto bg-primary/10 p-4 rounded-full w-fit mb-4">
+                    {feature.icon}
+                  </div>
+                  <CardTitle className="!font-headline text-xl">{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">{feature.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="relative py-20 md:py-32 bg-background">
         <div className="container mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
           <div className="text-center md:text-left">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">The Fabric of Our Lives</h2>
