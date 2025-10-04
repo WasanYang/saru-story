@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, Suspense } from 'react';
+import { useState, useMemo, Suspense, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ProductCard } from '@/components/product-card';
 import { getProducts } from '@/lib/data';
@@ -26,7 +26,7 @@ function ProductGrid() {
   const initialCategory = searchParams.get('category') || 'all';
   const [categoryFilter, setCategoryFilter] = useState(initialCategory);
 
-  useState(() => {
+  useEffect(() => {
     async function loadProducts() {
       setIsLoading(true);
       const fetchedProducts = await getProducts();
@@ -34,7 +34,7 @@ function ProductGrid() {
       setIsLoading(false);
     }
     loadProducts();
-  });
+  }, []);
 
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
