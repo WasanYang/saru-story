@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getProductById } from '@/lib/data';
@@ -28,10 +28,12 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [selectedColor, setSelectedColor] = useState<string>('');
+  
+  const id = use(Promise.resolve(params.id));
 
   useEffect(() => {
     async function fetchProduct() {
-      const fetchedProduct = await getProductById(params.id);
+      const fetchedProduct = await getProductById(id);
       if (fetchedProduct) {
         setProduct(fetchedProduct);
         setSelectedSize(fetchedProduct.sizes[0]);
@@ -43,7 +45,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
       setIsLoading(false);
     }
     fetchProduct();
-  }, [params.id]);
+  }, [id]);
 
 
   if (isLoading) {
