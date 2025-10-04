@@ -1,3 +1,70 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-1",
+      "description": "A tranquil lifestyle shot of a person wearing light, airy clothing in a natural setting.",
+      "imageUrl": "https://images.unsplash.com/photo-1707061769996-67086ca3deea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxuYXR1cmFsJTIwZmFicmljfGVufDB8fHx8MTc1OTU5MTY2Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "natural fabric"
+    },
+    {
+      "id": "story-1",
+      "description": "Hands of a local artisan carefully weaving fabric on a traditional loom.",
+      "imageUrl": "https://images.unsplash.com/photo-1699823891919-75016a04207d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxhcnRpc2FuJTIwY3JhZnR8ZW58MHx8fHwxNzU5NTczMzkwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "artisan craft"
+    },
+    {
+      "id": "why-saru-1",
+      "description": "An extreme close-up of muslin fabric, highlighting its soft and breathable texture.",
+      "imageUrl": "https://images.unsplash.com/photo-1611242319342-ed0d65b1a0f0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZmFicmljJTIwdGV4dHVyZXxlbnwwfHx8fDE3NTk1MTcxMDl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fabric texture"
+    },
+    {
+      "id": "product-shirt-1",
+      "description": "Front view of a minimalist olive green muslin shirt.",
+      "imageUrl": "https://images.unsplash.com/photo-1610319471440-04c408a19b3f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8Z3JlZW4lMjBzaGlydHxlbnwwfHx8fDE3NTk1OTE2Njd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "green shirt"
+    },
+    {
+      "id": "product-shirt-2",
+      "description": "Side view of a minimalist olive green muslin shirt, showing fabric drape.",
+      "imageUrl": "https://images.unsplash.com/photo-1672863866565-1560e52b118d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzaGlydCUyMHNpZGV8ZW58MHx8fHwxNzU5NTkxNjY2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "shirt side"
+    },
+    {
+      "id": "product-dress-1",
+      "description": "Front view of a flowy burnt sienna muslin dress.",
+      "imageUrl": "https://images.unsplash.com/photo-1703001523704-e6a9d32b3067?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxzaWVubmElMjBkcmVzc3xlbnwwfHx8fDE3NTk1OTE2NjZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "sienna dress"
+    },
+    {
+      "id": "product-dress-2",
+      "description": "Back view of a flowy burnt sienna muslin dress.",
+      "imageUrl": "https://images.unsplash.com/photo-1600095079058-d6db93225b44?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxkcmVzcyUyMGJhY2t8ZW58MHx8fHwxNzU5NTcwNjk5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dress back"
+    },
+    {
+      "id": "product-pants-1",
+      "description": "Front view of wide-leg off-white muslin pants.",
+      "imageUrl": "https://images.unsplash.com/photo-1650697626532-9ed3ae6f9ee5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx3aGl0ZSUyMHBhbnRzfGVufDB8fHx8MTc1OTU5MTY2Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "white pants"
+    },
+    {
+      "id": "product-pants-2",
+      "description": "Detail shot of the waistband and fabric of the muslin pants.",
+      "imageUrl": "https://images.unsplash.com/photo-1758180501142-fd64566c3531?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwYW50cyUyMGRldGFpbHxlbnwwfHx8fDE3NTk1OTE2NjZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "pants detail"
+    },
+    {
+      "id": "product-scarf-1",
+      "description": "A soft muslin scarf draped elegantly.",
+      "imageUrl": "https://images.unsplash.com/photo-1740133741658-6f084cf762ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bXVzbGluJTIwc2NhcmZ8ZW58MHx8fHwxNzU5NTkxNjY3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "muslin scarf"
+    },
+    {
+      "id": "product-scarf-2",
+      "description": "A close up of the texture of a muslin scarf.",
+      "imageUrl": "https://images.unsplash.com/photo-1611242319342-ed0d65b1a0f0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZmFicmljJTIwdGV4dHVyZXxlbnwwfHx8fDE3NTk1MTcxMDl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fabric texture"
+    }
+  ]
 }
