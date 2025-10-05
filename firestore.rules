@@ -1,103 +1,70 @@
-/**
- * @file Firestore Security Rules
- * @version 2
- *
- * @description This ruleset enforces a strict user-ownership model for user profiles and addresses.
- * All data is nested under /users/{userId}, ensuring that only the authenticated user can
- * read and write their own profile information and shipping addresses.
- *
- * Data Structure:
- * - /users/{userId}: Stores user profile information.
- * - /users/{userId}/addresses/{addressId}: Stores individual shipping addresses for a user.
- *
- * Key Security Decisions:
- * - Users can only access their own profile and addresses. Listing all users is disallowed.
- * - Data validation is relaxed to allow for rapid prototyping. However, critical ownership
- *   fields are validated to prevent data inconsistencies and unauthorized access.
- * - Timestamp validation is skipped for prototyping.
- *
- * Denormalization for Authorization:
- * - No denormalization is needed in this simplified model. All authorization decisions
- *   can be made directly based on the `request.auth.uid` and the Firestore path.
- *
- * Structural Segregation:
- * - No structural segregation is used. All data is private and stored under the user's ID.
- */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
     /**
-     * @description Controls access to user profile documents.
-     * @path /users/{userId}
-     * @allow (get) Authenticated user can read their own profile.
-     * @allow (create) Authenticated user can create their own profile.
-     * @allow (update) Authenticated user can update their own profile.
-     * @allow (delete) Authenticated user can delete their own profile.
-     * @deny (get) Unauthorized user tries to read another user's profile.
-     * @deny (create) Unauthorized user attempts to create a profile with a different ID.
-     * @deny (update) Unauthorized user attempts to modify another user's profile.
-     * @deny (delete) Unauthorized user attempts to delete another user's profile.
-     * @principle Enforces document ownership, allowing only the authenticated user to manage their own profile.
+     * @description This ruleset enforces a strict user-ownership model for user profiles and their addresses.
+     * All data is nested under /users/{userId}. Only the authenticated user can read and write their own profile and addresses.
+     * Key Security Decisions:
+     *   - Users can only access their own data. No listing of all users is allowed.
      */
-    match /users/{userId} {
-      // isSignedIn() function to verify that the user is signed in.
-      function isSignedIn() {
-        return request.auth != null;
-      }
 
-      // isOwner() function to verify that the user ID matches the authenticated user's ID.
-      function isOwner(userId) {
-        return request.auth.uid == userId;
-      }
+    // Helper function to check if the request is authenticated.
+    function isSignedIn() {
+      return request.auth != null;
+    }
 
-      // isExistingOwner() function to check if a document exists and the user is the owner.
-      function isExistingOwner(userId) {
-        return isOwner(userId) && existsAfter(/databases/$(database)/documents/users/$(userId));
-      }
+    // Helper function to check if the requested user ID matches the authenticated user's ID.
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
 
-      allow get: if isOwner(userId);
-      allow list: if false;
-
-      allow create: if isSignedIn() && request.auth.uid == userId;
-      allow update: if isSignedIn() && request.auth.uid == userId && isExistingOwner(userId);
-      allow delete: if isSignedIn() && request.auth.uid == userId && isExistingOwner(userId);
+    // Helper function to check if the requested user ID matches the authenticated user's ID, and the resource exists.
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
     }
 
     /**
-     * @description Controls access to shipping address documents for a user.
+     * @description Controls access to user profile information.
+     * @path /users/{userId}
+     * @allow (get) User with ID 'user123' can read their own profile. (auth.uid: 'user123')
+     * @allow (create) User with ID 'user123' can create their own profile. (auth.uid: 'user123')
+     * @allow (update) User with ID 'user123' can update their own profile. (auth.uid: 'user123')
+     * @allow (delete) User with ID 'user123' can delete their own profile. (auth.uid: 'user123')
+     * @deny (get) User with ID 'user456' cannot read the profile of user 'user123'. (auth.uid: 'user456')
+     * @deny (create) User with ID 'user456' cannot create the profile of user 'user123'. (auth.uid: 'user456')
+     * @deny (update) User with ID 'user456' cannot update the profile of user 'user123'. (auth.uid: 'user456')
+     * @deny (delete) User with ID 'user456' cannot delete the profile of user 'user123'. (auth.uid: 'user456')
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false; // Listing all users is not permitted
+
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Controls access to a user's shipping addresses.
      * @path /users/{userId}/addresses/{addressId}
-     * @allow (get) Authenticated user can read their own shipping address.
-     * @allow (create) Authenticated user can create a shipping address under their ID.
-     * @allow (update) Authenticated user can update their own shipping address.
-     * @allow (delete) Authenticated user can delete their own shipping address.
-     * @deny (get) Unauthorized user tries to read another user's shipping address.
-     * @deny (create) Unauthorized user attempts to create a shipping address under a different user ID.
-     * @deny (update) Unauthorized user attempts to modify another user's shipping address.
-     * @deny (delete) Unauthorized user attempts to delete another user's shipping address.
-     * @principle Enforces document ownership for writes, restricting access to the user's own addresses.
+     * @allow (get) User with ID 'user123' can read their own address with ID 'address001'. (auth.uid: 'user123')
+     * @allow (create) User with ID 'user123' can create a new address under their profile. (auth.uid: 'user123')
+     * @allow (update) User with ID 'user123' can update their own address with ID 'address001'. (auth.uid: 'user123')
+     * @allow (delete) User with ID 'user123' can delete their own address with ID 'address001'. (auth.uid: 'user123')
+     * @deny (get) User with ID 'user456' cannot read the address of user 'user123'. (auth.uid: 'user456')
+     * @deny (create) User with ID 'user456' cannot create an address for user 'user123'. (auth.uid: 'user456')
+     * @deny (update) User with ID 'user456' cannot update the address of user 'user123'. (auth.uid: 'user456')
+     * @deny (delete) User with ID 'user456' cannot delete the address of user 'user123'. (auth.uid: 'user456')
+     * @principle Enforces document ownership for all operations.
      */
     match /users/{userId}/addresses/{addressId} {
-      // isSignedIn() function to verify that the user is signed in.
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      // isOwner() function to verify that the user ID matches the authenticated user's ID.
-      function isOwner(userId) {
-        return request.auth.uid == userId;
-      }
-
-      // isExistingOwner() function to check if a document exists and the user is the owner.
-      function isExistingOwner(userId) {
-        return isOwner(userId) && existsAfter(/databases/$(database)/documents/users/$(userId)/addresses/$(addressId));
-      }
-
       allow get: if isOwner(userId);
-      allow list: if false;
-      allow create: if isSignedIn() && request.auth.uid == userId;
-      allow update: if isSignedIn() && request.auth.uid == userId && isExistingOwner(userId);
-      allow delete: if isSignedIn() && request.auth.uid == userId && isExistingOwner(userId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
     }
   }
 }
