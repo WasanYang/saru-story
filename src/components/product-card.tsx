@@ -3,9 +3,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { Product } from '@/lib/types';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from './ui/badge';
 import { getImage } from '@/lib/placeholder-images';
 import { useLanguage } from '@/providers/language-provider';
+import { Button } from './ui/button';
+import { useCart } from '@/providers/cart-provider';
+import { Plus } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -14,14 +16,21 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const primaryImage = getImage(product.images[0]);
   const { dictionary } = useLanguage();
+  const { addToCart } = useCart();
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart(product, 1, product.sizes[0], product.colors[0].name);
+  };
 
   if (!dictionary?.productCard) {
     return null;
   }
 
   return (
-    <Card className="flex flex-col h-full overflow-hidden transition-shadow duration-300 hover:shadow-2xl rounded-none">
-      <Link href={`/products/${product.id}`} className="block overflow-hidden aspect-square relative group">
+    <Card className="flex flex-col h-full overflow-hidden transition-shadow duration-300 hover:shadow-2xl rounded-none group">
+      <Link href={`/products/${product.id}`} className="block overflow-hidden aspect-square relative">
         <CardHeader className="p-0">
             {primaryImage && (
                 <Image
@@ -32,17 +41,23 @@ export function ProductCard({ product }: ProductCardProps) {
                     data-ai-hint={primaryImage.imageHint}
                 />
             )}
+            <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <Button size="icon" onClick={handleAddToCart}>
+                    <Plus className="h-5 w-5"/>
+                    <span className="sr-only">{dictionary.productCard.addToCart}</span>
+                </Button>
+            </div>
         </CardHeader>
-        <CardContent className="p-4 flex-grow">
-            <CardTitle className="text-lg mb-2 !font-body font-bold hover:text-primary transition-colors">
+        <div className="p-4">
+            <CardTitle className="text-lg mb-2 !font-body font-bold group-hover:text-primary transition-colors">
                 {product.name}
             </CardTitle>
             <p className="text-muted-foreground text-sm">{product.tags.join(', ')}</p>
-        </CardContent>
-        <CardFooter className="p-4 pt-0 flex justify-between items-center">
+        </div>
+        </Link>
+        <CardFooter className="p-4 pt-0 mt-auto">
             <p className="text-lg font-semibold">${product.price.toFixed(2)}</p>
         </CardFooter>
-      </Link>
     </Card>
   );
 }

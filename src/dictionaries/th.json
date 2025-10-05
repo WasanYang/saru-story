@@ -52,7 +52,8 @@
         "continueShopping": "เลือกซื้อสินค้าต่อ"
     },
     "productCard": {
-        "viewDetails": "ดูรายละเอียด"
+        "viewDetails": "ดูรายละเอียด",
+        "addToCart": "เพิ่มไปยังตะกร้า"
     },
     "product": {
         "color": "สี",
