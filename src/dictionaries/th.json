@@ -125,7 +125,7 @@
         "country": "ประเทศ",
         "paymentMethod": "วิธีการชำระเงิน",
         "creditCard": "บัตรเครดิต",
-        "paypal": "เพย์พาล",
+        "paypal": "PayPal",
         "cardNumber": "หมายเลขบัตร",
         "expiryDate": "วันหมดอายุ",
         "cvc": "CVC",
