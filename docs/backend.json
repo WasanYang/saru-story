@@ -1,0 +1,46 @@
+
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Represents a user's profile information.",
+      "type": "object",
+      "properties": {
+        "fullName": {
+          "type": "string",
+          "description": "The full name of the user."
+        },
+        "address": {
+          "type": "string",
+          "description": "The user's shipping address."
+        },
+        "city": {
+          "type": "string",
+          "description": "The city of the user's shipping address."
+        },
+        "postalCode": {
+          "type": "string",
+          "description": "The postal code of the user's shipping address."
+        },
+        "country": {
+          "type": "string",
+          "description": "The country of the user's shipping address."
+        }
+      },
+      "required": ["fullName", "address", "city", "postalCode", "country"]
+    }
+  },
+  "auth": {
+    "providers": ["google.com"]
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/UserProfile"
+      },
+      "description": "Stores user profile information, keyed by user ID."
+    }
+  }
+}
+
+    

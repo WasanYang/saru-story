@@ -1,3 +1,4 @@
+
 {
   "home": {
     "heroTitle": "Embrace Softness, Naturally.",
@@ -26,7 +27,9 @@
     "whySaru": "Why Saru?"
   },
   "header": {
-    "userAccount": "User Account"
+    "userAccount": "User Account",
+    "profile": "Profile",
+    "signOut": "Sign Out"
   },
   "footer": {
     "tagline": "Crafting comfort with natural muslin fabrics.",
@@ -94,13 +97,9 @@
     "p1": "Saru is more than just a name; it's our word for muslin, a fabric cherished for centuries for its unique qualities. We chose muslin not just for its beauty, but for the incredible benefits it brings to your daily life. It's a fabric that cares for you, just as we care for the way it's made."
   },
   "login": {
-    "title": "Welcome Back",
-    "subtitle": "Enter your email below to login to your account",
-    "email": "Email",
-    "password": "Password",
-    "signIn": "Sign In",
-    "noAccount": "Don't have an account?",
-    "signUp": "Sign up"
+    "title": "Welcome",
+    "subtitle": "Sign in to access your account and order history.",
+    "signInWithGoogle": "Sign In with Google"
   },
   "register": {
     "title": "Create an Account",
@@ -135,5 +134,20 @@
     "taxes": "Taxes",
     "calculatedAtNextStep": "Calculated at next step",
     "total": "Total"
+  },
+  "profile": {
+    "title": "My Profile",
+    "subtitle": "Manage your shipping information and view your details.",
+    "shippingInfo": "Shipping Information",
+    "fullName": "Full Name",
+    "address": "Address",
+    "city": "City",
+    "postalCode": "Postal Code",
+    "country": "Country",
+    "saveChanges": "Save Changes",
+    "changesSaved": "Your changes have been saved.",
+    "errorSaving": "Failed to save changes."
   }
 }
+
+    
