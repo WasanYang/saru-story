@@ -136,7 +136,7 @@
     "total": "Total"
   },
   "profile": {
-    "title": "My Profile",
+    "title": "Profile Settings",
     "subtitle": "Manage your shipping information and view your details.",
     "shippingInfo": "Shipping Information",
     "fullName": "Full Name",
@@ -146,8 +146,10 @@
     "country": "Country",
     "saveChanges": "Save Changes",
     "changesSaved": "Your changes have been saved.",
-    "errorSaving": "Failed to save changes."
+    "errorSaving": "Failed to save changes.",
+    "orderHistory": "Order History",
+    "order": "Order",
+    "placedOn": "Placed on",
+    "viewDetails": "View Details"
   }
 }
-
-    

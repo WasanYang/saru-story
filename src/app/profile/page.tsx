@@ -27,6 +27,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Link from 'next/link';
 
 const profileSchema = z.object({
   fullName: z.string().min(2, 'Full name is required'),
@@ -38,22 +40,14 @@ const profileSchema = z.object({
 
 type ProfileFormData = z.infer<typeof profileSchema>;
 
-export default function ProfilePage() {
-  const { data: user, isLoading: isUserLoading } = useUser();
-  const router = useRouter();
+function ProfileForm() {
+  const { data: user } = useUser();
   const { dictionary } = useLanguage();
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  // Redirect if not logged in
-  useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.replace('/login');
-    }
-  }, [user, isUserLoading, router]);
-
   const userProfileRef = user && firestore ? doc(firestore, 'users', user.uid) : null;
-  const { data: userProfile, isLoading: isProfileLoading } = useDoc<ProfileFormData>(userProfileRef);
+  const { data: userProfile } = useDoc<ProfileFormData>(userProfileRef);
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -66,7 +60,6 @@ export default function ProfilePage() {
     },
   });
 
-  // Update form with user profile data
   useEffect(() => {
     if (userProfile) {
       form.reset(userProfile);
@@ -105,14 +98,105 @@ export default function ProfilePage() {
       });
   }
 
-  if (isUserLoading || isProfileLoading) {
+  if (!dictionary?.profile) {
+    return null;
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{dictionary.profile.shippingInfo}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField name="fullName" control={form.control} render={({ field }) => (
+              <FormItem><FormLabel>{dictionary.profile.fullName}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
+            <FormField name="address" control={form.control} render={({ field }) => (
+              <FormItem><FormLabel>{dictionary.profile.address}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
+            <div className="grid sm:grid-cols-2 gap-4">
+              <FormField name="city" control={form.control} render={({ field }) => (
+                <FormItem><FormLabel>{dictionary.profile.city}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+              )} />
+              <FormField name="postalCode" control={form.control} render={({ field }) => (
+                <FormItem><FormLabel>{dictionary.profile.postalCode}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+              )} />
+            </div>
+            <FormField name="country" control={form.control} render={({ field }) => (
+              <FormItem><FormLabel>{dictionary.profile.country}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
+
+            <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+              {dictionary.profile.saveChanges}
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
+  );
+}
+
+function OrderHistory() {
+    const { dictionary } = useLanguage();
+    // Dummy data for now
+    const orders = [
+        { id: 'SARU1001', date: '2024-05-20', total: 163.00, status: 'Delivered' },
+        { id: 'SARU1002', date: '2024-06-15', total: 75.00, status: 'Shipped' },
+    ];
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>{dictionary.profile.orderHistory}</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-4">
+                    {orders.map(order => (
+                         <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-secondary/50 transition-colors">
+                            <div>
+                                <p className="font-semibold text-primary">{dictionary.profile.order} #{order.id}</p>
+                                <p className="text-sm text-muted-foreground">{dictionary.profile.placedOn} {new Date(order.date).toLocaleDateString()}</p>
+                            </div>
+                            <div className="text-right">
+                               <p className="font-semibold">${order.total.toFixed(2)}</p>
+                               <p className="text-sm text-muted-foreground">{order.status}</p>
+                            </div>
+                             <Button asChild variant="outline" size="sm">
+                                <Link href={`/profile/orders/${order.id}`}>{dictionary.profile.viewDetails}</Link>
+                            </Button>
+                        </div>
+                    ))}
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
+export default function ProfilePage() {
+  const { data: user, isLoading: isUserLoading } = useUser();
+  const router = useRouter();
+  const { dictionary } = useLanguage();
+
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.replace('/login');
+    }
+  }, [user, isUserLoading, router]);
+
+  if (isUserLoading || !user) {
     return (
       <div className="container mx-auto px-4 py-16">
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-4xl mx-auto">
             <Card>
                 <CardHeader>
-                    <Skeleton className="h-8 w-48" />
-                    <Skeleton className="h-4 w-64" />
+                    <div className="flex items-center gap-4">
+                        <Skeleton className="h-16 w-16 rounded-full" />
+                        <div>
+                            <Skeleton className="h-8 w-48 mb-2" />
+                            <Skeleton className="h-4 w-64" />
+                        </div>
+                    </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <Skeleton className="h-10 w-full" />
@@ -124,10 +208,6 @@ export default function ProfilePage() {
       </div>
     );
   }
-  
-  if (!user) {
-    return null; // Or a loading indicator
-  }
 
   if (!dictionary?.profile) {
     return null;
@@ -135,52 +215,31 @@ export default function ProfilePage() {
 
   return (
     <div className="container mx-auto px-4 py-16">
-      <div className="max-w-2xl mx-auto">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-4">
-              <Avatar className="h-16 w-16">
+        <div className="max-w-4xl mx-auto">
+            <div className="flex items-center gap-4 mb-8">
+              <Avatar className="h-20 w-20">
                 <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'} />
                 <AvatarFallback>{user.displayName?.charAt(0)}</AvatarFallback>
               </Avatar>
               <div>
-                <CardTitle className="text-3xl">{dictionary.profile.title}</CardTitle>
-                <CardDescription>{dictionary.profile.subtitle}</CardDescription>
+                <h1 className="text-3xl font-bold">{user.displayName}</h1>
+                <p className="text-muted-foreground">{user.email}</p>
               </div>
             </div>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <h3 className="text-lg font-semibold">{dictionary.profile.shippingInfo}</h3>
-                <FormField name="fullName" control={form.control} render={({ field }) => (
-                  <FormItem><FormLabel>{dictionary.profile.fullName}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField name="address" control={form.control} render={({ field }) => (
-                  <FormItem><FormLabel>{dictionary.profile.address}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <FormField name="city" control={form.control} render={({ field }) => (
-                    <FormItem><FormLabel>{dictionary.profile.city}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                  )} />
-                  <FormField name="postalCode" control={form.control} render={({ field }) => (
-                    <FormItem><FormLabel>{dictionary.profile.postalCode}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                  )} />
-                </div>
-                <FormField name="country" control={form.control} render={({ field }) => (
-                  <FormItem><FormLabel>{dictionary.profile.country}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
 
-                <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                  {dictionary.profile.saveChanges}
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-      </div>
+            <Tabs defaultValue="profile">
+                <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="profile">{dictionary.profile.title}</TabsTrigger>
+                    <TabsTrigger value="orders">{dictionary.profile.orderHistory}</TabsTrigger>
+                </TabsList>
+                <TabsContent value="profile" className="mt-6">
+                    <ProfileForm />
+                </TabsContent>
+                <TabsContent value="orders" className="mt-6">
+                    <OrderHistory />
+                </TabsContent>
+            </Tabs>
+        </div>
     </div>
   );
 }
-
-    
