@@ -1,70 +1,81 @@
+/**
+ * @fileoverview Firestore Security Rules for the application.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model.  Each user can only
+ * access their own profile information and shipping addresses.  Data validation
+ * is relaxed to allow for rapid prototyping.
+ *
+ * Data Structure:
+ * - /users/{userId}: Stores user profile information.
+ * - /users/{userId}/addresses/{addressId}: Stores user shipping addresses.
+ *
+ * Key Security Decisions:
+ * - Users can only read and write their own profile data.
+ * - Users can only manage their own shipping addresses.
+ * - Listing all users is disallowed.
+ *
+ * Denormalization for Authorization:
+ *  - The rules rely on the path /users/{userId} to enforce ownership, avoiding the need to store the userId inside the user document itself.
+ *
+ * Structural Segregation:
+ *  - Private user data (profiles, addresses) is stored under the /users/{userId} collection, ensuring it is not publicly accessible.
+ */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    /**
-     * @description This ruleset enforces a strict user-ownership model for user profiles and their addresses.
-     * All data is nested under /users/{userId}. Only the authenticated user can read and write their own profile and addresses.
-     * Key Security Decisions:
-     *   - Users can only access their own data. No listing of all users is allowed.
-     */
-
-    // Helper function to check if the request is authenticated.
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    // Helper function to check if the requested user ID matches the authenticated user's ID.
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
-    // Helper function to check if the requested user ID matches the authenticated user's ID, and the resource exists.
-    function isExistingOwner(userId) {
-      return isOwner(userId) && resource != null;
-    }
 
     /**
-     * @description Controls access to user profile information.
+     * @description Protects user profiles. Only the owner can read and write their own profile.
      * @path /users/{userId}
-     * @allow (get) User with ID 'user123' can read their own profile. (auth.uid: 'user123')
-     * @allow (create) User with ID 'user123' can create their own profile. (auth.uid: 'user123')
-     * @allow (update) User with ID 'user123' can update their own profile. (auth.uid: 'user123')
-     * @allow (delete) User with ID 'user123' can delete their own profile. (auth.uid: 'user123')
-     * @deny (get) User with ID 'user456' cannot read the profile of user 'user123'. (auth.uid: 'user456')
-     * @deny (create) User with ID 'user456' cannot create the profile of user 'user123'. (auth.uid: 'user456')
-     * @deny (update) User with ID 'user456' cannot update the profile of user 'user123'. (auth.uid: 'user456')
-     * @deny (delete) User with ID 'user456' cannot delete the profile of user 'user123'. (auth.uid: 'user456')
+     * @allow (get, update, delete) - User with UID 'user123' can read/update/delete their own profile document.
+     *   - Request: auth.uid = 'user123', path = '/databases/(default)/documents/users/user123'
+     * @allow (create) - User with UID 'user123' can create their profile document if the userId matches their UID.
+     *   - Request: auth.uid = 'user123', path = '/databases/(default)/documents/users/user123'
+     * @deny (get, update, delete) - User with UID 'user456' cannot read/update/delete the profile document of user 'user123'.
+     *   - Request: auth.uid = 'user456', path = '/databases/(default)/documents/users/user123'
+     * @deny (create) - User with UID 'user456' cannot create a profile for user 'user123'.
+     *   - Request: auth.uid = 'user456', path = '/databases/(default)/documents/users/user123'
      * @principle Enforces document ownership for all operations.
      */
     match /users/{userId} {
-      allow get: if isOwner(userId);
-      allow list: if false; // Listing all users is not permitted
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
 
-      allow create: if isOwner(userId);
-      allow update: if isExistingOwner(userId);
-      allow delete: if isExistingOwner(userId);
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if false;
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isOwner(userId);
+      allow delete: if isSignedIn() && isOwner(userId);
     }
 
     /**
-     * @description Controls access to a user's shipping addresses.
+     * @description Protects user addresses. Only the owner can read and write their own addresses.
      * @path /users/{userId}/addresses/{addressId}
-     * @allow (get) User with ID 'user123' can read their own address with ID 'address001'. (auth.uid: 'user123')
-     * @allow (create) User with ID 'user123' can create a new address under their profile. (auth.uid: 'user123')
-     * @allow (update) User with ID 'user123' can update their own address with ID 'address001'. (auth.uid: 'user123')
-     * @allow (delete) User with ID 'user123' can delete their own address with ID 'address001'. (auth.uid: 'user123')
-     * @deny (get) User with ID 'user456' cannot read the address of user 'user123'. (auth.uid: 'user456')
-     * @deny (create) User with ID 'user456' cannot create an address for user 'user123'. (auth.uid: 'user456')
-     * @deny (update) User with ID 'user456' cannot update the address of user 'user123'. (auth.uid: 'user456')
-     * @deny (delete) User with ID 'user456' cannot delete the address of user 'user123'. (auth.uid: 'user456')
-     * @principle Enforces document ownership for all operations.
+     * @allow (get, list, create, update, delete) - User with UID 'user123' can manage their own address documents under /users/user123/addresses/.
+     *   - Request: auth.uid = 'user123', path = '/databases/(default)/documents/users/user123/addresses/address456'
+     * @deny (get, list, create, update, delete) - User with UID 'user456' cannot manage address documents under /users/user123/addresses/.
+     *   - Request: auth.uid = 'user456', path = '/databases/(default)/documents/users/user123/addresses/address456'
+     * @principle Enforces document ownership for all operations on addresses.
      */
     match /users/{userId}/addresses/{addressId} {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
 
-      allow create: if isOwner(userId);
-      allow update: if isExistingOwner(userId);
-      allow delete: if isExistingOwner(userId);
+      function isSignedIn() {
+        return request.auth != null;
+      }
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if false;
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isOwner(userId);
+      allow delete: if isSignedIn() && isOwner(userId);
     }
   }
 }
