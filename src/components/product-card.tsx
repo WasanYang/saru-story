@@ -14,9 +14,9 @@ export function ProductCard({ product }: ProductCardProps) {
   const primaryImage = getImage(product.images[0]);
 
   return (
-    <Card className="flex flex-col h-full overflow-hidden transition-shadow duration-300 hover:shadow-lg">
+    <Card className="flex flex-col h-full overflow-hidden transition-shadow duration-300 hover:shadow-2xl rounded-none">
         <CardHeader className="p-0">
-        <Link href={`/products/${product.id}`} className="block overflow-hidden aspect-square relative">
+        <Link href={`/products/${product.id}`} className="block overflow-hidden aspect-square relative group">
             {primaryImage && (
                 <Image
                     src={primaryImage.imageUrl}
@@ -38,7 +38,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </CardContent>
         <CardFooter className="p-4 pt-0 flex justify-between items-center">
             <p className="text-lg font-semibold">${product.price.toFixed(2)}</p>
-            <Button asChild size="sm" variant="outline">
+            <Button asChild size="sm" variant="outline" className="rounded-none">
                 <Link href={`/products/${product.id}`}>View Details</Link>
             </Button>
         </CardFooter>
