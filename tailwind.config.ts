@@ -18,7 +18,7 @@ export default {
     extend: {
       fontFamily: {
         body: ['Noto Sans Thai', 'sans-serif'],
-        headline: ['Belleza', 'sans-serif'],
+        headline: ['Noto Sans Thai', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
