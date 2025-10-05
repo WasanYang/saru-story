@@ -23,13 +23,12 @@ export function initializeFirebase(): {
   firestore: Firestore,
 } {
   const firebaseConfig = {
-    projectId: 'studio-4977338751-3a7b4',
-    appId: '1:113183137665:web:f170f64c8cce7b948c5280',
-    storageBucket: 'studio-4977338751-3a7b4.appspot.com',
-    apiKey: 'AIzaSyAE-7S0LMMXwJRJb_Y-cLM2QlpECj5RhAU',
-    authDomain: 'studio-4977338751-3a7b4.firebaseapp.com',
-    messagingSenderId: '113183137665',
-    measurementId: 'G-7P4C02513P'
+    apiKey: "AIzaSyAE-7S0LMMXwJRJb_Y-cLM2QlpECj5RhAU",
+    authDomain: "studio-4977338751-3a7b4.firebaseapp.com",
+    projectId: "studio-4977338751-3a7b4",
+    storageBucket: "studio-4977338751-3a7b4.appspot.com",
+    messagingSenderId: "113183137665",
+    appId: "1:113183137665:web:fa3c73032b7c12ee8c5280"
   };
 
   const firebaseApp = !getApps().length
