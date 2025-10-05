@@ -1,66 +1,67 @@
-/**
- * @fileOverview Firestore Security Rules for the application.
- *
- * Core Philosophy:
- * This ruleset enforces a strict user-ownership model for user profiles.
- * Only the authenticated user can read or write their own profile data.
- *
- * Data Structure:
- * User profile data is stored under the `/users/{userId}` path, where `{userId}`
- * corresponds to the Firebase Authentication UID.
- *
- * Key Security Decisions:
- * - User profiles are private and not listable.
- * - Users can only create, update, and delete their own profile.
- *
- * Denormalization for Authorization:
- * No denormalization is needed as the path `/users/{userId}` inherently links
- * the data to the authenticated user.  The `userId` in the path is matched
- * against `request.auth.uid` to ensure ownership.
- */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Controls access to user profile documents.
+     * @description Enforces a strict user-ownership model for profile data.  Users can only read and write their own profile information.
      * @path /users/{userId}
-     * @allow (create) User 'user_abc' can create their profile if request.auth.uid == userId.
-     * @allow (get, update, delete) User 'user_abc' can get, update, and delete their profile if request.auth.uid == userId.
-     * @deny (create) User 'user_xyz' cannot create a profile for user 'user_abc'.
-     * @deny (get, update, delete) User 'user_xyz' cannot get, update, or delete the profile for user 'user_abc'.
+     * @allow (get) auth.uid == userId
+     * @allow (list) auth.uid == userId
+     * @allow (create) auth.uid == userId
+     * @allow (update) auth.uid == userId
+     * @allow (delete) auth.uid == userId
+     * @deny (get) auth.uid != userId
+     * @deny (list) auth.uid != userId
+     * @deny (create) auth.uid != userId
+     * @deny (update) auth.uid != userId
+     * @deny (delete) auth.uid != userId
      * @principle Enforces document ownership for all operations.
      */
     match /users/{userId} {
-      // Helper function to check if the user is signed in.
-      function isSignedIn() {
-        return request.auth != null;
-      }
+      // Read permissions: Only the user can read their own profile.
+      allow get, list: if isOwner(userId);
 
-      // Helper function to check if the authenticated user is the owner of the resource.
-      function isOwner(userId) {
-        return request.auth.uid == userId;
-      }
+      // Write permissions: Only the user can create, update, or delete their own profile.
+      allow create: if isOwner(userId) && request.auth.uid == userId;
+      allow update: if isExistingOwner(userId) && isOwner(userId) && request.auth.uid == userId;
+      allow delete: if isExistingOwner(userId) && isOwner(userId);
+    }
 
-      // Helper function to check if the authenticated user is the existing owner of the resource.
-      function isExistingOwner(userId) {
-        return isOwner(userId) && resource != null;
-      }
+    /**
+     * @description Enforces a strict user-ownership model for shipping addresses. Users can only read and write their own addresses.
+     * @path /users/{userId}/addresses/{addressId}
+     * @allow (get) auth.uid == userId
+     * @allow (list) auth.uid == userId
+     * @allow (create) auth.uid == userId
+     * @allow (update) auth.uid == userId
+     * @allow (delete) auth.uid == userId
+     * @deny (get) auth.uid != userId
+     * @deny (list) auth.uid != userId
+     * @deny (create) auth.uid != userId
+     * @deny (update) auth.uid != userId
+     * @deny (delete) auth.uid != userId
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/addresses/{addressId} {
+      // Read permissions: Only the user can read their own addresses.
+      allow get, list: if isOwner(userId);
 
-      // Allow a user to create their own profile if the userId matches their auth UID.
-      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == request.auth.uid;
+      // Write permissions: Only the user can create, update, or delete their own addresses.
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId) && isOwner(userId);
+      allow delete: if isExistingOwner(userId) && isOwner(userId);
+    }
 
-      // Allow a user to get their own profile.
-      allow get: if isSignedIn() && isOwner(userId);
+    // --- Helper functions ---
 
-      // Listing all users is not allowed.
-      allow list: if false;
+    // Checks if the request is made by the owner of the document.
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
 
-      // Allow a user to update their own profile.
-      allow update: if isSignedIn() && isExistingOwner(userId) && request.resource.data.id == resource.data.id;
-
-      // Allow a user to delete their own profile.
-      allow delete: if isSignedIn() && isExistingOwner(userId);
+    // Checks if the request is made by the existing owner of the document, and that the document exists.
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
     }
   }
 }
