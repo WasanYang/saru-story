@@ -1,16 +1,16 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/firebase/auth/use-user';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useLanguage } from '@/providers/language-provider';
-import { useDoc } from '@/firebase/firestore/use-doc';
+import { useCollection } from '@/firebase/firestore/use-collection';
 import { useFirestore } from '@/firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { collection, doc, addDoc, deleteDoc, writeBatch } from 'firebase/firestore';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -30,8 +30,17 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from 'next/link';
 import { FirestorePermissionError } from '@/firebase/errors';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { PlusCircle, Trash2, Home, Star } from 'lucide-react';
+import { addAddress, deleteAddress, setDefaultAddress } from '@/lib/actions/address';
 
-const profileSchema = z.object({
+const addressSchema = z.object({
   fullName: z.string().min(2, 'Full name is required'),
   address: z.string().min(5, 'Address is required'),
   city: z.string().min(2, 'City is required'),
@@ -39,106 +48,170 @@ const profileSchema = z.object({
   country: z.string().min(2, 'Country is required'),
 });
 
-type ProfileFormData = z.infer<typeof profileSchema>;
+type AddressFormData = z.infer<typeof addressSchema>;
 
-function ProfileForm() {
-  const { data: user } = useUser();
-  const { dictionary } = useLanguage();
-  const firestore = useFirestore();
-  const { toast } = useToast();
+interface Address extends AddressFormData {
+    id: string;
+    isDefault?: boolean;
+}
 
-  const userProfileRef = user && firestore ? doc(firestore, 'users', user.uid) : null;
-  const { data: userProfile } = useDoc<ProfileFormData>(userProfileRef);
+function AddressForm({ onSave }: { onSave: () => void }) {
+    const { data: user } = useUser();
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const { dictionary } = useLanguage();
 
-  const form = useForm<ProfileFormData>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: {
-      fullName: '',
-      address: '',
-      city: '',
-      postalCode: '',
-      country: '',
-    },
-  });
-
-  useEffect(() => {
-    // Only reset the form if it hasn't been touched by the user yet.
-    // This prevents overwriting user input or causing a loop on save.
-    if (userProfile && !form.formState.isDirty) {
-      form.reset(userProfile);
-    } else if(user && !form.formState.isDirty){
-        form.reset({
-            fullName: user.displayName || '',
+    const form = useForm<AddressFormData>({
+        resolver: zodResolver(addressSchema),
+        defaultValues: {
+            fullName: user?.displayName || '',
             address: '',
             city: '',
             postalCode: '',
             country: '',
-        })
+        },
+    });
+
+    async function onSubmit(values: AddressFormData) {
+        if (!user || !firestore) return;
+        try {
+            await addAddress(user.uid, values);
+            toast({ title: dictionary.profile.addressAdded });
+            form.reset();
+            onSave();
+        } catch (e: any) {
+            toast({
+                variant: 'destructive',
+                title: dictionary.profile.errorSaving,
+                description: e.message,
+            });
+        }
     }
-  }, [userProfile, user, form]);
 
-  async function onSubmit(values: ProfileFormData) {
-    if (!userProfileRef) return;
-    
-    setDoc(userProfileRef, values, { merge: true })
-      .then(() => {
-        toast({
-          title: dictionary.profile.changesSaved,
-        });
-      })
-      .catch(async (serverError) => {
-        const permissionError = new FirestorePermissionError({
-          path: userProfileRef.path,
-          operation: 'update',
-          requestResourceData: values,
-        });
-        errorEmitter.emit('permission-error', permissionError);
-        toast({
-          variant: 'destructive',
-          title: dictionary.profile.errorSaving,
-          description: permissionError.toString(),
-        });
-      });
-  }
-
-  if (!dictionary?.profile) {
-    return null;
-  }
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{dictionary.profile.shippingInfo}</CardTitle>
-      </CardHeader>
-      <CardContent>
+    return (
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField name="fullName" control={form.control} render={({ field }) => (
-              <FormItem><FormLabel>{dictionary.profile.fullName}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField name="address" control={form.control} render={({ field }) => (
-              <FormItem><FormLabel>{dictionary.profile.address}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <div className="grid sm:grid-cols-2 gap-4">
-              <FormField name="city" control={form.control} render={({ field }) => (
-                <FormItem><FormLabel>{dictionary.profile.city}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-              )} />
-              <FormField name="postalCode" control={form.control} render={({ field }) => (
-                <FormItem><FormLabel>{dictionary.profile.postalCode}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-              )} />
-            </div>
-            <FormField name="country" control={form.control} render={({ field }) => (
-              <FormItem><FormLabel>{dictionary.profile.country}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-
-            <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-              {dictionary.profile.saveChanges}
-            </Button>
-          </form>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField name="fullName" control={form.control} render={({ field }) => (
+                    <FormItem><FormLabel>{dictionary.profile.fullName}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField name="address" control={form.control} render={({ field }) => (
+                    <FormItem><FormLabel>{dictionary.profile.address}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <div className="grid sm:grid-cols-2 gap-4">
+                    <FormField name="city" control={form.control} render={({ field }) => (
+                        <FormItem><FormLabel>{dictionary.profile.city}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField name="postalCode" control={form.control} render={({ field }) => (
+                        <FormItem><FormLabel>{dictionary.profile.postalCode}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                </div>
+                <FormField name="country" control={form.control} render={({ field }) => (
+                    <FormItem><FormLabel>{dictionary.profile.country}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                )} />
+                <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                    {dictionary.profile.saveAddress}
+                </Button>
+            </form>
         </Form>
-      </CardContent>
-    </Card>
-  );
+    );
+}
+
+function AddressManagement() {
+    const { data: user } = useUser();
+    const firestore = useFirestore();
+    const { dictionary } = useLanguage();
+    const { toast } = useToast();
+    const [isFormOpen, setIsFormOpen] = useState(false);
+
+    const addressesRef = user && firestore ? collection(firestore, 'users', user.uid, 'addresses') : null;
+    const { data: addresses, loading, error } = useCollection<Address>(addressesRef);
+
+    const handleDelete = async (addressId: string) => {
+        if (!user) return;
+        if (confirm(dictionary.profile.confirmDeleteAddress)) {
+            try {
+                await deleteAddress(user.uid, addressId);
+                toast({ title: dictionary.profile.addressDeleted });
+            } catch (e: any) {
+                toast({
+                    variant: 'destructive',
+                    title: dictionary.profile.errorDeleting,
+                    description: e.message,
+                });
+            }
+        }
+    };
+    
+    const handleSetDefault = async (addressId: string) => {
+        if(!user || !addresses) return;
+        try {
+            await setDefaultAddress(user.uid, addressId);
+            toast({ title: dictionary.profile.defaultAddressSet });
+        } catch (e: any) {
+             toast({
+                variant: 'destructive',
+                title: dictionary.profile.errorSettingDefault,
+                description: e.message,
+            });
+        }
+    }
+
+    if (loading) {
+        return <Skeleton className="h-48 w-full" />
+    }
+
+    if (error) {
+        return <p className="text-destructive">{dictionary.profile.errorLoadingAddresses}: {error.message}</p>
+    }
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>{dictionary.profile.shippingAddresses}</CardTitle>
+                <CardDescription>{dictionary.profile.manageShippingAddresses}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                {addresses && addresses.map(addr => (
+                    <div key={addr.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-secondary/50 transition-colors">
+                        <div className="flex items-center gap-4">
+                             <Home className="h-6 w-6 text-muted-foreground"/>
+                             <div>
+                                <p className="font-semibold">{addr.fullName} {addr.isDefault && <span className="text-xs font-normal text-primary">({dictionary.profile.default})</span>}</p>
+                                <p className="text-sm text-muted-foreground">{addr.address}, {addr.city}, {addr.postalCode}, {addr.country}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            {!addr.isDefault && (
+                                <Button variant="ghost" size="icon" onClick={() => handleSetDefault(addr.id)}>
+                                    <Star className="h-5 w-5"/>
+                                    <span className="sr-only">{dictionary.profile.setAsDefault}</span>
+                                </Button>
+                            )}
+                            <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleDelete(addr.id)}>
+                                <Trash2 className="h-5 w-5" />
+                                <span className="sr-only">{dictionary.profile.deleteAddress}</span>
+                            </Button>
+                        </div>
+                    </div>
+                ))}
+
+                <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                    <DialogTrigger asChild>
+                        <Button variant="outline" className="w-full">
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            {dictionary.profile.addNewAddress}
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>{dictionary.profile.addNewAddress}</DialogTitle>
+                        </DialogHeader>
+                        <AddressForm onSave={() => setIsFormOpen(false)} />
+                    </DialogContent>
+                </Dialog>
+            </CardContent>
+        </Card>
+    )
 }
 
 function OrderHistory() {
@@ -230,13 +303,13 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <Tabs defaultValue="profile">
+            <Tabs defaultValue="addresses">
                 <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="profile">{dictionary.profile.title}</TabsTrigger>
+                    <TabsTrigger value="addresses">{dictionary.profile.addresses}</TabsTrigger>
                     <TabsTrigger value="orders">{dictionary.profile.orderHistory}</TabsTrigger>
                 </TabsList>
-                <TabsContent value="profile" className="mt-6">
-                    <ProfileForm />
+                <TabsContent value="addresses" className="mt-6">
+                    <AddressManagement />
                 </TabsContent>
                 <TabsContent value="orders" className="mt-6">
                     <OrderHistory />

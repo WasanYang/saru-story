@@ -133,7 +133,10 @@
     "free": "Free",
     "taxes": "Taxes",
     "calculatedAtNextStep": "Calculated at next step",
-    "total": "Total"
+    "total": "Total",
+    "selectAddress": "Select a shipping address",
+    "or": "OR",
+    "addNewAddress": "Add a new shipping address"
   },
   "profile": {
     "title": "Profile Settings",
@@ -150,6 +153,21 @@
     "orderHistory": "Order History",
     "order": "Order",
     "placedOn": "Placed on",
-    "viewDetails": "View Details"
+    "viewDetails": "View Details",
+    "addresses": "Addresses",
+    "shippingAddresses": "Shipping Addresses",
+    "manageShippingAddresses": "Manage your saved shipping addresses.",
+    "addNewAddress": "Add New Address",
+    "addressAdded": "New address added successfully.",
+    "saveAddress": "Save Address",
+    "confirmDeleteAddress": "Are you sure you want to delete this address?",
+    "addressDeleted": "Address deleted.",
+    "errorDeleting": "Error deleting address.",
+    "deleteAddress": "Delete Address",
+    "default": "Default",
+    "setAsDefault": "Set as Default",
+    "defaultAddressSet": "Default address updated.",
+    "errorSettingDefault": "Error setting default address.",
+    "errorLoadingAddresses": "Error loading addresses"
   }
 }
