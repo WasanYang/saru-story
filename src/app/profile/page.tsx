@@ -29,6 +29,7 @@ import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from 'next/link';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const profileSchema = z.object({
   fullName: z.string().min(2, 'Full name is required'),
@@ -72,7 +73,7 @@ function ProfileForm() {
             country: '',
         })
     }
-  }, [userProfile, user, form]);
+  }, [userProfile, user, form.reset]);
 
   async function onSubmit(values: ProfileFormData) {
     if (!userProfileRef) return;
