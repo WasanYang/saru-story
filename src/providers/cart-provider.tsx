@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useMemo, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useMemo, ReactNode, useEffect } from 'react';
 import type { CartItem, Product } from '@/lib/types';
 import { useToast } from "@/hooks/use-toast"
 
@@ -17,8 +17,34 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const { toast } = useToast()
+    const [isClient, setIsClient] = useState(false);
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
+
+    const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+        if (typeof window === 'undefined') {
+            return [];
+        }
+        try {
+            const localData = window.localStorage.getItem('saru-cart');
+            return localData ? JSON.parse(localData) : [];
+        } catch (error) {
+            console.error("Error reading from local storage", error);
+            return [];
+        }
+    });
+    
+    const { toast } = useToast()
+
+    useEffect(() => {
+        try {
+            window.localStorage.setItem('saru-cart', JSON.stringify(cartItems));
+        } catch (error) {
+            console.error("Error writing to local storage", error);
+        }
+    }, [cartItems]);
 
   const addToCart = (product: Product, quantity: number, selectedSize: string, selectedColor: string) => {
     setCartItems(prevItems => {
@@ -59,12 +85,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const cartCount = useMemo(() => {
+    if (!isClient) return 0;
     return cartItems.reduce((count, item) => count + item.quantity, 0);
-  }, [cartItems]);
+  }, [cartItems, isClient]);
   
   const cartTotal = useMemo(() => {
+    if (!isClient) return 0;
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
-  }, [cartItems]);
+  }, [cartItems, isClient]);
 
   const value = {
     cartItems,

@@ -30,8 +30,8 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Card className="flex flex-col h-full overflow-hidden transition-shadow duration-300 hover:shadow-2xl rounded-none group">
-      <Link href={`/products/${product.id}`} className="block overflow-hidden aspect-square relative">
-        <CardHeader className="p-0">
+      <Link href={`/products/${product.id}`} className="flex flex-col flex-grow">
+        <CardHeader className="p-0 relative aspect-square w-full">
             {primaryImage && (
                 <Image
                     src={primaryImage.imageUrl}
@@ -48,16 +48,16 @@ export function ProductCard({ product }: ProductCardProps) {
                 </Button>
             </div>
         </CardHeader>
-        <div className="p-4">
-            <CardTitle className="text-lg mb-2 !font-body font-bold group-hover:text-primary transition-colors">
+        <CardContent className="p-4 flex-grow flex flex-col">
+            <p className="text-muted-foreground text-sm">{product.tags.join(', ')}</p>
+        </CardContent>
+        <CardFooter className="p-4 pt-0 mt-auto flex justify-between items-baseline">
+            <CardTitle className="text-lg !font-body font-bold group-hover:text-primary transition-colors">
                 {product.name}
             </CardTitle>
-            <p className="text-muted-foreground text-sm">{product.tags.join(', ')}</p>
-        </div>
-        </Link>
-        <CardFooter className="p-4 pt-0 mt-auto">
             <p className="text-lg font-semibold">${product.price.toFixed(2)}</p>
         </CardFooter>
+        </Link>
     </Card>
   );
 }
