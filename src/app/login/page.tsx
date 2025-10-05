@@ -1,8 +1,10 @@
+
 'use client';
 
 import { useRouter } from 'next/navigation';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useUser } from '@/firebase/auth/use-user';
+import { useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -44,7 +46,13 @@ export default function LoginPage() {
   const { data: user, isLoading } = useUser();
   const router = useRouter();
 
-  if (isLoading) {
+  useEffect(() => {
+    if (user) {
+      router.replace('/profile');
+    }
+  }, [user, router]);
+
+  if (isLoading || user) {
     return (
         <div className="container mx-auto flex min-h-[calc(100vh-8rem)] items-center justify-center">
             <Card className="w-full max-w-sm"><CardHeader><CardTitle className="text-center">Loading...</CardTitle></CardHeader></Card>
@@ -52,11 +60,6 @@ export default function LoginPage() {
     );
   }
 
-  if (user) {
-    router.replace('/profile');
-    return null;
-  }
-  
   const handleGoogleSignIn = async () => {
     if (!firebaseApp) return;
     const auth = getAuth(firebaseApp);
@@ -93,5 +96,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-    
