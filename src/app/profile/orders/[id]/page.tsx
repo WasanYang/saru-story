@@ -8,74 +8,94 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import { getImage } from '@/lib/placeholder-images';
+import { useUser } from '@/firebase/auth/use-user';
+import { useFirestore } from '@/firebase';
+import { useDoc } from '@/firebase/firestore/use-doc';
+import { useCollection } from '@/firebase/firestore/use-collection';
+import { doc, collection, type DocumentData } from 'firebase/firestore';
+import { Skeleton } from '@/components/ui/skeleton';
 
-// This is dummy data. In a real app, you'd fetch this from your database.
-const getOrderById = (id: string) => {
-    const orders = [
-        { 
-            id: 'SARU1001', 
-            date: '2024-05-20', 
-            total: 163.00, 
-            status: 'Delivered',
-            shippingAddress: {
-                fullName: 'Jane Doe',
-                address: '123 Blossom St',
-                city: 'Springfield',
-                postalCode: '12345',
-                country: 'USA'
-            },
-            items: [
-                { id: 'saru-shirt-olive', name: 'The Essential Muslin Shirt', price: 68.0, quantity: 1, images:['product-shirt-1'], selectedSize: 'M', selectedColor: 'Olive' },
-                { id: 'saru-dress-sienna', name: 'The Flowy Muslin Dress', price: 95.0, quantity: 1, images:['product-dress-1'], selectedSize: 'S', selectedColor: 'Sienna' }
-            ]
-        },
-        { 
-            id: 'SARU1002', 
-            date: '2024-06-15', 
-            total: 75.00, 
-            status: 'Shipped',
-            shippingAddress: {
-                fullName: 'Jane Doe',
-                address: '123 Blossom St',
-                city: 'Springfield',
-                postalCode: '12345',
-                country: 'USA'
-            },
-            items: [
-                { id: 'saru-pants-white', name: 'The Relaxed Muslin Pants', price: 75.0, quantity: 1, images:['product-pants-1'], selectedSize: 'L', selectedColor: 'Off-White' }
-            ]
-        },
-    ];
-    return orders.find(order => order.id === id);
+interface OrderItem {
+    id: string;
+    productId: string;
+    name: string;
+    price: number;
+    quantity: number;
+    images: string[];
+    selectedSize: string;
+    selectedColor: string;
 }
-
 
 export default function OrderDetailsPage() {
     const params = useParams();
     const orderId = params.id as string;
-    const order = getOrderById(orderId);
+    const { data: user } = useUser();
+    const firestore = useFirestore();
+
+    const orderRef = user && firestore ? doc(firestore, 'users', user.uid, 'orders', orderId) : null;
+    const { data: order, loading: orderLoading } = useDoc(orderRef);
+
+    const itemsRef = user && firestore ? collection(firestore, 'users', user.uid, 'orders', orderId, 'items') : null;
+    const { data: items, loading: itemsLoading } = useCollection<OrderItem>(itemsRef);
+
+    if (orderLoading || itemsLoading) {
+        return (
+            <div className="container mx-auto px-4 py-16">
+                <div className="max-w-4xl mx-auto">
+                    <Skeleton className="h-10 w-36 mb-4" />
+                    <Card>
+                        <CardHeader>
+                            <Skeleton className="h-8 w-48 mb-2" />
+                            <Skeleton className="h-4 w-64" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid md:grid-cols-2 gap-8">
+                                <div>
+                                    <Skeleton className="h-6 w-32 mb-2" />
+                                    <Skeleton className="h-4 w-40 mb-1" />
+                                    <Skeleton className="h-4 w-48" />
+                                </div>
+                                <div>
+                                    <Skeleton className="h-6 w-32 mb-2" />
+                                    <Skeleton className="h-4 w-full mb-1" />
+                                    <Skeleton className="h-4 w-full" />
+                                </div>
+                            </div>
+                            <Separator className="my-8" />
+                            <Skeleton className="h-6 w-40 mb-4" />
+                            <div className="space-y-4">
+                                <Skeleton className="h-20 w-full" />
+                                <Skeleton className="h-20 w-full" />
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        );
+    }
 
     if (!order) {
         notFound();
     }
 
-    const subtotal = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const subtotal = items?.reduce((sum, item) => sum + item.price * item.quantity, 0) || 0;
+    const typedOrder = order as DocumentData;
 
     return (
         <div className="container mx-auto px-4 py-16">
             <div className="max-w-4xl mx-auto">
                 <Button variant="ghost" asChild className="mb-4">
-                    <Link href="/profile">
+                    <Link href="/profile/orders">
                         <ChevronLeft className="mr-2 h-4 w-4" />
-                        Back to Profile
+                        Back to Orders
                     </Link>
                 </Button>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-3xl">Order #{order.id}</CardTitle>
+                        <CardTitle className="text-3xl">Order #{orderId}</CardTitle>
                         <CardDescription>
-                            Placed on {new Date(order.date).toLocaleDateString()} | Status: {order.status}
+                            Placed on {new Date(typedOrder.orderDate.toDate()).toLocaleDateString()} | Status: {typedOrder.status}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -83,10 +103,10 @@ export default function OrderDetailsPage() {
                             <div>
                                 <h3 className="font-semibold text-lg mb-2">Shipping Address</h3>
                                 <div className="text-muted-foreground">
-                                    <p>{order.shippingAddress.fullName}</p>
-                                    <p>{order.shippingAddress.address}</p>
-                                    <p>{order.shippingAddress.city}, {order.shippingAddress.postalCode}</p>
-                                    <p>{order.shippingAddress.country}</p>
+                                    <p>{typedOrder.shippingAddress.fullName}</p>
+                                    <p>{typedOrder.shippingAddress.address}</p>
+                                    <p>{typedOrder.shippingAddress.city}, {typedOrder.shippingAddress.postalCode}</p>
+                                    <p>{typedOrder.shippingAddress.country}</p>
                                 </div>
                             </div>
                              <div>
@@ -107,7 +127,7 @@ export default function OrderDetailsPage() {
                                     <Separator className="my-2" />
                                     <div className="flex justify-between font-semibold text-foreground">
                                         <span>Total</span>
-                                        <span>${order.total.toFixed(2)}</span>
+                                        <span>${typedOrder.total.toFixed(2)}</span>
                                     </div>
                                 </div>
                             </div>
@@ -117,7 +137,7 @@ export default function OrderDetailsPage() {
                         
                         <h3 className="font-semibold text-lg mb-4">Items in this order</h3>
                         <div className="space-y-4">
-                            {order.items.map(item => {
+                            {items && items.map(item => {
                                 const itemImage = getImage(item.images[0]);
                                 return (
                                 <div key={item.id} className="flex items-center gap-4">
@@ -135,7 +155,6 @@ export default function OrderDetailsPage() {
                                 </div>
                             )})}
                         </div>
-
                     </CardContent>
                 </Card>
             </div>

@@ -12,7 +12,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { getImage } from '@/lib/placeholder-images';
-import { CreditCard, ShoppingBag, PlusCircle } from 'lucide-react';
+import { CreditCard, ShoppingBag, PlusCircle, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -25,6 +25,9 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { createOrder } from '@/lib/actions/order';
+import { useToast } from '@/hooks/use-toast';
+import { addAddress } from '@/lib/actions/address';
 
 const addressSchema = z.object({
   fullName: z.string().min(2, 'Full name is required'),
@@ -57,7 +60,9 @@ export default function CheckoutPage() {
   const { dictionary } = useLanguage();
   const { data: user } = useUser();
   const firestore = useFirestore();
+  const { toast } = useToast();
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<string | undefined>(undefined);
   const [showNewAddressForm, setShowNewAddressForm] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('card');
@@ -77,10 +82,10 @@ export default function CheckoutPage() {
   });
 
   useEffect(() => {
-    if (cartCount === 0) {
+    if (cartCount === 0 && !isSubmitting) {
       router.push('/products');
     }
-  }, [cartCount, router]);
+  }, [cartCount, router, isSubmitting]);
   
   useEffect(() => {
       if (addresses && !selectedAddressId) {
@@ -98,23 +103,65 @@ export default function CheckoutPage() {
       }
   }, [addresses, selectedAddressId]);
 
-  function onOrderSubmit(values: AddressFormData) {
-    const shippingAddress = showNewAddressForm ? values : addresses?.find(a => a.id === selectedAddressId);
-    if (!shippingAddress) {
-        alert('Please select or enter a shipping address.');
+  async function onOrderSubmit(values: AddressFormData) {
+    if (!user) {
+        toast({ variant: 'destructive', title: 'Authentication Error', description: 'You must be logged in to place an order.' });
         return;
     }
-    console.log({ shippingAddress, items: cartItems, total: cartTotal, paymentMethod });
-    alert('Order placed successfully! (Check console for details)');
-    clearCart();
-    router.push('/');
-  }
+
+    let shippingAddress: Omit<Address, 'id'> | AddressFormData = values;
+
+    if (showNewAddressForm) {
+        // Optionally save the new address to the user's profile
+        try {
+            await addAddress(user.uid, values);
+        } catch (error) {
+            console.error("Failed to save new address:", error);
+            // Decide if this should block the order or just be a silent failure
+        }
+    } else {
+        const foundAddress = addresses?.find(a => a.id === selectedAddressId);
+        if (!foundAddress) {
+            toast({ variant: 'destructive', title: 'Address Error', description: 'Please select a valid shipping address.' });
+            return;
+        }
+        shippingAddress = foundAddress;
+    }
+    
+    setIsSubmitting(true);
+
+    try {
+        await createOrder(user.uid, {
+            shippingAddress,
+            items: cartItems,
+            total: cartTotal,
+            paymentMethod,
+        });
+
+        toast({
+            title: 'Order Placed!',
+            description: 'Your order has been successfully placed.',
+        });
+        clearCart();
+        router.push('/profile/orders');
+    } catch (error: any) {
+        console.error('Failed to create order:', error);
+        toast({
+            variant: 'destructive',
+            title: 'Order Failed',
+            description: error.message || 'There was an error placing your order.',
+        });
+    } finally {
+        setIsSubmitting(false);
+    }
+}
+
 
   if (!dictionary?.checkout) {
     return null;
   }
 
-  if (cartCount === 0) {
+  if (cartCount === 0 && !isSubmitting) {
     return (
       <div className="container mx-auto flex min-h-[calc(100vh-8rem)] flex-col items-center justify-center gap-4 px-4 py-16 text-center">
         <ShoppingBag className="h-16 w-16 text-muted-foreground" />
@@ -217,7 +264,7 @@ export default function CheckoutPage() {
                   <div className="flex items-center gap-4">
                       <RadioGroupItem value="paypal" id="payment-paypal" />
                       <PaypalIcon className="h-6 w-6" />
-                      <span className="font-semibold">{dictionary.checkout.paypal}</span>
+                      <span className="font-semibold">PayPal</span>
                   </div>
               </Label>
           </RadioGroup>
@@ -243,7 +290,8 @@ export default function CheckoutPage() {
               </Card>
           )}
 
-          <Button onClick={form.handleSubmit(onOrderSubmit)} size="lg" className="w-full mt-8 bg-accent text-accent-foreground hover:bg-accent/90">
+          <Button onClick={form.handleSubmit(onOrderSubmit)} size="lg" className="w-full mt-8 bg-accent text-accent-foreground hover:bg-accent/90" disabled={isSubmitting}>
+             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {dictionary.checkout.placeOrder}
           </Button>
         </div>

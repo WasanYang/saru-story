@@ -47,6 +47,67 @@
         }
       },
       "required": ["fullName", "address", "city", "postalCode", "country"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Represents an order placed by a user.",
+      "type": "object",
+      "properties": {
+        "orderDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The date the order was placed."
+        },
+        "total": {
+          "type": "number",
+          "description": "The total amount of the order."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Pending", "Shipped", "Delivered", "Cancelled"],
+          "description": "The status of the order."
+        },
+        "shippingAddress": {
+          "$ref": "#/entities/Address"
+        },
+        "paymentMethod": {
+          "type": "string",
+          "description": "The payment method used."
+        }
+      },
+      "required": ["orderDate", "total", "status", "shippingAddress"]
+    },
+    "OrderItem": {
+      "title": "Order Item",
+      "description": "Represents a single item within an order.",
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number"
+        },
+        "quantity": {
+          "type": "number"
+        },
+        "images": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "selectedSize": {
+          "type": "string"
+        },
+        "selectedColor": {
+          "type": "string"
+        }
+      },
+      "required": ["productId", "name", "price", "quantity"]
     }
   },
   "auth": {
@@ -64,6 +125,18 @@
         "$ref": "#/entities/Address"
       },
       "description": "Stores a user's shipping addresses as a subcollection."
+    },
+    "/users/{userId}/orders/{orderId}": {
+      "schema": {
+        "$ref": "#/entities/Order"
+      },
+      "description": "Stores orders for a specific user."
+    },
+    "/users/{userId}/orders/{orderId}/items/{itemId}": {
+      "schema": {
+        "$ref": "#/entities/OrderItem"
+      },
+      "description": "Stores the items for a specific order."
     }
   }
 }

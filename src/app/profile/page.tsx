@@ -10,7 +10,7 @@ import { z } from 'zod';
 import { useLanguage } from '@/providers/language-provider';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { useFirestore } from '@/firebase';
-import { collection, doc, addDoc, deleteDoc, writeBatch } from 'firebase/firestore';
+import { collection, doc, addDoc, deleteDoc, writeBatch, Timestamp, DocumentData, query, orderBy } from 'firebase/firestore';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -26,10 +26,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { errorEmitter } from '@/firebase/error-emitter';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from 'next/link';
-import { FirestorePermissionError } from '@/firebase/errors';
 import {
   Dialog,
   DialogContent,
@@ -57,7 +55,6 @@ interface Address extends AddressFormData {
 
 function AddressForm({ onSave }: { onSave: () => void }) {
     const { data: user } = useUser();
-    const firestore = useFirestore();
     const { toast } = useToast();
     const { dictionary } = useLanguage();
 
@@ -73,7 +70,7 @@ function AddressForm({ onSave }: { onSave: () => void }) {
     });
 
     async function onSubmit(values: AddressFormData) {
-        if (!user || !firestore) return;
+        if (!user) return;
         try {
             await addAddress(user.uid, values);
             toast({ title: dictionary.profile.addressAdded });
@@ -216,11 +213,31 @@ function AddressManagement() {
 
 function OrderHistory() {
     const { dictionary } = useLanguage();
-    // Dummy data for now
-    const orders = [
-        { id: 'SARU1001', date: '2024-05-20', total: 163.00, status: 'Delivered' },
-        { id: 'SARU1002', date: '2024-06-15', total: 75.00, status: 'Shipped' },
-    ];
+    const { data: user } = useUser();
+    const firestore = useFirestore();
+
+    const ordersQuery = user && firestore 
+        ? query(collection(firestore, 'users', user.uid, 'orders'), orderBy('orderDate', 'desc'))
+        : null;
+        
+    const { data: orders, loading, error } = useCollection(ordersQuery);
+
+    if (loading) {
+        return (
+            <Card>
+                <CardHeader><CardTitle>{dictionary.profile.orderHistory}</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                    <Skeleton className="h-24 w-full" />
+                    <Skeleton className="h-24 w-full" />
+                </CardContent>
+            </Card>
+        )
+    }
+
+    if (error) {
+        return <p className="text-destructive">Error loading orders: {error.message}</p>
+    }
+
     return (
         <Card>
             <CardHeader>
@@ -228,21 +245,25 @@ function OrderHistory() {
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
-                    {orders.map(order => (
+                    {orders && orders.length > 0 ? orders.map(order => {
+                        const typedOrder = order as DocumentData;
+                        return (
                          <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-secondary/50 transition-colors">
                             <div>
                                 <p className="font-semibold text-primary">{dictionary.profile.order} #{order.id}</p>
-                                <p className="text-sm text-muted-foreground">{dictionary.profile.placedOn} {new Date(order.date).toLocaleDateString()}</p>
+                                <p className="text-sm text-muted-foreground">{dictionary.profile.placedOn} {new Date(typedOrder.orderDate.toDate()).toLocaleDateString()}</p>
                             </div>
                             <div className="text-right">
-                               <p className="font-semibold">${order.total.toFixed(2)}</p>
-                               <p className="text-sm text-muted-foreground">{order.status}</p>
+                               <p className="font-semibold">${typedOrder.total.toFixed(2)}</p>
+                               <p className="text-sm text-muted-foreground">{typedOrder.status}</p>
                             </div>
                              <Button asChild variant="outline" size="sm">
                                 <Link href={`/profile/orders/${order.id}`}>{dictionary.profile.viewDetails}</Link>
                             </Button>
                         </div>
-                    ))}
+                    )}) : (
+                        <p className="text-muted-foreground">You have no orders yet.</p>
+                    )}
                 </div>
             </CardContent>
         </Card>
@@ -303,7 +324,7 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <Tabs defaultValue="addresses">
+            <Tabs defaultValue="orders" className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="addresses">{dictionary.profile.addresses}</TabsTrigger>
                     <TabsTrigger value="orders">{dictionary.profile.orderHistory}</TabsTrigger>
