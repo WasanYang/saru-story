@@ -12,10 +12,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { getImage } from '@/lib/placeholder-images';
-import { CreditCard, ShoppingBag, Home, PlusCircle } from 'lucide-react';
+import { CreditCard, ShoppingBag, PlusCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useLanguage } from '@/providers/language-provider';
 import { useUser } from '@/firebase/auth/use-user';
 import { useFirestore } from '@/firebase';
@@ -41,6 +41,16 @@ interface Address extends AddressFormData {
   isDefault?: boolean;
 }
 
+function PaypalIcon(props: React.SVGProps<SVGSVGElement>) {
+    return (
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+            <path fillRule="evenodd" clipRule="evenodd" d="M3.328 20.352c.42.922.992 1.223 1.888 1.223h3.584c.484 0 .914-.336 1.05-.795l.183-1.099c.12-.72.63-1.18 1.24-1.347l.135-.034c.83-.21 1.157-1.054.89-1.848-.282-.83-.873-1.047-1.748-.832l-.128.032c-1.12.28-1.928-1.008-1.5-2.07l1.09-3.264.12-.357c.27-.803.854-1.02 1.73-.808l.128.032c1.12.28 2.219-.482 2.62-1.503.22-.57.17-1.19-.13-1.72-.4-.704-1.1-1.12-1.92-1.12h-3.41c-.51 0-.96.36-1.07.85l-.2 1.15c-.14.79-.7 1.29-1.37 1.48l-.13.03c-.8.19-1.17-.6-1.44-1.42l-.21-.63c-.3-1.02-1.05-1.57-2-1.57h-3.41c-1.28 0-2.41 1.05-2.61 2.31l-1.09 6.55c-.2 1.2.6 2.35 1.8 2.35h3.04zm11.39-12.27c.47 0 .88.24 1.12.63.15.26.17.56.07.84-.25.72-1.01 1.23-1.8 1.02l-3.3-1.1c-.5-.17-.83-.6-.83-1.14v-.03c0-.52.36-.95.86-1.06l3.88-1.1c.06-.02.13-.02.19-.02.48 0 .9.24 1.13.63.15.25.17.56.07.84-.25.72-1.01 1.23-1.8 1.02l-3.3-1.1c-.5-.16-.83-.6-.83-1.13v-.03c0-.52.36-.95.86-1.06l3.88-1.1c.06-.01.13-.02.19-.02.48 0 .89.24 1.13.63.14.25.17.55.07.83-.25.72-1.01 1.23-1.8 1.02L12.9 6.8c-.8.2-1.56-.32-1.8-1.02-.15-.42.06-.88.47-1.15.4-.26.88-.26 1.28 0l5.82 1.94c1.12.38 1.8 1.45 1.5 2.57-.3 1.13-1.39 1.8-2.5 1.5l-5.83-1.94c.02.01-.01 0 0 0z" fill="#0070BA"/>
+            <path fillRule="evenodd" clipRule="evenodd" d="M4.328 3.512c.41.922.982 1.223 1.878 1.223h3.584c.484 0 .914-.336 1.05-.795l.183-1.099c.12-.72.63-1.18 1.24-1.347l.135-.034c.83-.21 1.157-1.054.89-1.848-.282-.83-.873-1.047-1.748-.832l-.128.032c-1.12.28-1.928-1.008-1.5-2.07l1.09-3.264.12-.357c.27-.803.854-1.02 1.73-.808l.128.032c1.12.28 2.219-.482 2.62-1.503.22-.57.17-1.19-.13-1.72-.4-.704-1.1-1.12-1.92-1.12h-3.41c-.51 0-.96.36-1.07.85l-.2 1.15c-.14.79-.7 1.29-1.37 1.48l-.13.03c-.8.19-1.17-.6-1.44-1.42l-.21-.63c-.3-1.02-1.05-1.57-2-1.57h-3.41c-1.28 0-2.41 1.05-2.61 2.31l-1.09 6.55c-.2 1.2.6 2.35 1.8 2.35h3.04z" fill="#0094DE"/>
+            <path d="M12.92 6.81c-.8.2-1.56-.32-1.8-1.02-.15-.42.06-.88.47-1.15.4-.26.88-.26 1.28 0l5.82 1.94c1.12.38 1.8 1.45 1.5 2.57-.3 1.13-1.39 1.8-2.5 1.5l-5.82-1.94z" fill="#002069"/>
+        </svg>
+    )
+}
+
 export default function CheckoutPage() {
   const { cartItems, cartTotal, cartCount, clearCart } = useCart();
   const router = useRouter();
@@ -50,6 +60,7 @@ export default function CheckoutPage() {
 
   const [selectedAddressId, setSelectedAddressId] = useState<string | undefined>(undefined);
   const [showNewAddressForm, setShowNewAddressForm] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('card');
 
   const addressesRef = user && firestore ? collection(firestore, 'users', user.uid, 'addresses') : null;
   const { data: addresses, loading: addressesLoading } = useCollection<Address>(addressesRef);
@@ -93,7 +104,7 @@ export default function CheckoutPage() {
         alert('Please select or enter a shipping address.');
         return;
     }
-    console.log({ shippingAddress, items: cartItems, total: cartTotal });
+    console.log({ shippingAddress, items: cartItems, total: cartTotal, paymentMethod });
     alert('Order placed successfully! (Check console for details)');
     clearCart();
     router.push('/');
@@ -171,7 +182,7 @@ export default function CheckoutPage() {
 
           {(showNewAddressForm || (addresses && addresses.length === 0)) && (
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onOrderSubmit)} className="space-y-4">
+              <form className="space-y-4">
                 <FormField name="fullName" control={form.control} render={({ field }) => (
                   <FormItem><FormLabel>{dictionary.checkout.fullName}</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
@@ -193,15 +204,44 @@ export default function CheckoutPage() {
             </Form>
           )}
 
-          <h2 className="text-2xl font-semibold pt-8 pb-4">{dictionary.checkout.paymentMethod}</h2>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-4 p-4 border rounded-md bg-secondary/50">
-                <CreditCard className="h-6 w-6 text-muted-foreground" />
-                <p className="text-muted-foreground">{dictionary.checkout.paymentNotImplemented}</p>
-              </div>
-            </CardContent>
-          </Card>
+          <h2 className="text-2xl font-semibold pt-12 pb-4">{dictionary.checkout.paymentMethod}</h2>
+          <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-4">
+              <Label htmlFor="payment-card" className={cn("p-4 border rounded-lg cursor-pointer hover:bg-secondary/50", {"border-primary ring-2 ring-primary": paymentMethod === 'card'})}>
+                  <div className="flex items-center gap-4">
+                      <RadioGroupItem value="card" id="payment-card" />
+                      <CreditCard className="h-6 w-6" />
+                      <span className="font-semibold">{dictionary.checkout.creditCard}</span>
+                  </div>
+              </Label>
+              <Label htmlFor="payment-paypal" className={cn("p-4 border rounded-lg cursor-pointer hover:bg-secondary/50", {"border-primary ring-2 ring-primary": paymentMethod === 'paypal'})}>
+                  <div className="flex items-center gap-4">
+                      <RadioGroupItem value="paypal" id="payment-paypal" />
+                      <PaypalIcon className="h-6 w-6" />
+                      <span className="font-semibold">{dictionary.checkout.paypal}</span>
+                  </div>
+              </Label>
+          </RadioGroup>
+
+          {paymentMethod === 'card' && (
+              <Card className="mt-4">
+                  <CardContent className="pt-6 space-y-4">
+                       <div className="space-y-1">
+                           <Label htmlFor="card-number">{dictionary.checkout.cardNumber}</Label>
+                           <Input id="card-number" placeholder="•••• •••• •••• ••••" />
+                       </div>
+                       <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                                <Label htmlFor="expiry-date">{dictionary.checkout.expiryDate}</Label>
+                                <Input id="expiry-date" placeholder="MM / YY" />
+                            </div>
+                             <div className="space-y-1">
+                                <Label htmlFor="cvc">{dictionary.checkout.cvc}</Label>
+                                <Input id="cvc" placeholder="CVC" />
+                            </div>
+                       </div>
+                  </CardContent>
+              </Card>
+          )}
 
           <Button onClick={form.handleSubmit(onOrderSubmit)} size="lg" className="w-full mt-8 bg-accent text-accent-foreground hover:bg-accent/90">
             {dictionary.checkout.placeOrder}
