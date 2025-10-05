@@ -41,7 +41,7 @@ export function ProductCard({ product }: ProductCardProps) {
                     {product.name}
                 </Link>
             </CardTitle>
-            <p className="text-muted-foreground text-sm">{product.category}</p>
+            <p className="text-muted-foreground text-sm">{product.tags.join(', ')}</p>
         </CardContent>
         <CardFooter className="p-4 pt-0 flex justify-between items-center">
             <p className="text-lg font-semibold">${product.price.toFixed(2)}</p>

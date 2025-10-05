@@ -3,13 +3,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/product-card';
-import { getProducts } from '@/lib/data';
+import { getProductsByTag } from '@/lib/data';
 import { PlaceHolderImages, getImage } from '@/lib/placeholder-images';
 import { Leaf, Waves, Thermometer, Droplets } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLanguage } from '@/providers/language-provider';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Product } from '@/lib/types';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const features = [
   {
@@ -34,24 +36,69 @@ const features = [
   }
 ];
 
+const featuredTags = ['Best Sellers', 'New Arrivals', 'Clothing', 'Home', 'Accessories'];
+
+function FeaturedProducts() {
+  const { dictionary } = useLanguage();
+  const [productsByTag, setProductsByTag] = useState<Record<string, Product[]>>({});
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      setIsLoading(true);
+      const allProductsPromises = featuredTags.map(tag => getProductsByTag(tag));
+      const results = await Promise.all(allProductsPromises);
+      const newProductsByTag: Record<string, Product[]> = {};
+      featuredTags.forEach((tag, index) => {
+        newProductsByTag[tag] = results[index];
+      });
+      setProductsByTag(newProductsByTag);
+      setIsLoading(false);
+    }
+    fetchProducts();
+  }, []);
+
+  return (
+    <Tabs defaultValue={featuredTags[0]} className="w-full">
+      <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 mb-8">
+        {featuredTags.map(tag => (
+          <TabsTrigger key={tag} value={tag}>{tag}</TabsTrigger>
+        ))}
+      </TabsList>
+      {featuredTags.map(tag => (
+        <TabsContent key={tag} value={tag}>
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="flex flex-col space-y-3">
+                  <Skeleton className="h-[300px] w-full" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {(productsByTag[tag] || []).slice(0, 4).map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      ))}
+    </Tabs>
+  );
+}
 
 export default function Home() {
   const { dictionary } = useLanguage();
-  const [products, setProducts] = useState<Product[]>([]);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const prods = await getProducts();
-      setProducts(prods);
-    };
-    fetchProducts();
-  }, []);
 
   if (!dictionary || Object.keys(dictionary).length === 0) {
     return <div>Loading...</div>; // Or a proper skeleton loader
   }
 
-  const featuredProducts = products.slice(0, 3);
   const heroImage = getImage('hero-1');
   const storyImage = getImage('story-1');
 
@@ -90,11 +137,7 @@ export default function Home() {
               {dictionary.home.featuredProductsSubtitle}
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          <FeaturedProducts />
           <div className="text-center mt-12">
             <Button asChild variant="outline">
               <Link href="/products">{dictionary.home.viewAllProducts}</Link>

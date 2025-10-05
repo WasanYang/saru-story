@@ -33,12 +33,12 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=shirts" className="text-sm text-muted-foreground hover:text-primary">
+                <Link href="/products?category=Clothing" className="text-sm text-muted-foreground hover:text-primary">
                   {dictionary.footer.shirts}
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=dresses" className="text-sm text-muted-foreground hover:text-primary">
+                <Link href="/products?category=Clothing" className="text-sm text-muted-foreground hover:text-primary">
                   {dictionary.footer.dresses}
                 </Link>
               </li>

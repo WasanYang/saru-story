@@ -41,14 +41,14 @@ function ProductGrid() {
 
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
-      const categoryMatch = categoryFilter === 'all' || product.category === categoryFilter;
+      const categoryMatch = categoryFilter === 'all' || product.tags.includes(categoryFilter);
       const colorMatch = colorFilter === 'all' || product.colors.some(c => c.name === colorFilter);
       const sizeMatch = sizeFilter === 'all' || product.sizes.includes(sizeFilter);
       return categoryMatch && colorMatch && sizeMatch;
     });
   }, [products, categoryFilter, colorFilter, sizeFilter]);
 
-  const allCategories = useMemo(() => ['all', ...Array.from(new Set(products.map(p => p.category)))], [products]);
+  const allCategories = useMemo(() => ['all', ...Array.from(new Set(products.flatMap(p => p.tags)))], [products]);
   const allColors = useMemo(() => ['all', ...Array.from(new Set(products.flatMap(p => p.colors.map(c => c.name))))], [products]);
   const allSizes = useMemo(() => ['all', ...Array.from(new Set(products.flatMap(p => p.sizes)))], [products]);
 
