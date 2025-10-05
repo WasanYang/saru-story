@@ -20,8 +20,8 @@
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 77 10% 80%;
-    --input: 77 10% 92%;
+    --border: 77 10% 85%;
+    --input: 77 10% 85%;
     --ring: 14 72% 62%;
     --radius: 0rem;
   }
@@ -43,8 +43,8 @@
     --accent-foreground: 20 14% 4%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 77 10% 20%;
-    --input: 77 10% 20%;
+    --border: 77 10% 25%;
+    --input: 77 10% 25%;
     --ring: 14 72% 62%;
   }
 }
