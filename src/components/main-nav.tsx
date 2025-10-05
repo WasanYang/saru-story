@@ -30,7 +30,7 @@ export function MainNav({
       className={cn("flex items-center space-x-4 lg:space-x-6", className)}
       {...props}
     >
-      <Link href="/" className="flex items-center space-x-2">
+      <Link href="/" className="mr-6 flex items-center space-x-2">
         <Leaf className="h-6 w-6 text-primary" />
         <span className="inline-block font-bold font-headline text-lg">Saru Story</span>
       </Link>
