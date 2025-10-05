@@ -13,6 +13,7 @@ import {
   SheetTrigger,
   SheetFooter,
   SheetClose,
+  SheetDescription,
 } from '@/components/ui/sheet';
 import { ScrollArea } from './ui/scroll-area';
 import { Separator } from './ui/separator';
@@ -45,6 +46,7 @@ export function CartSheet() {
       <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg">
         <SheetHeader className="px-6">
           <SheetTitle>{dictionary.cart.title} ({cartCount})</SheetTitle>
+          <SheetDescription className="sr-only">Your current shopping cart</SheetDescription>
         </SheetHeader>
         <Separator />
         {cartCount > 0 ? (

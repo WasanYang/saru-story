@@ -9,8 +9,10 @@ import { useLanguage } from "@/providers/language-provider";
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
   SheetTrigger,
-  SheetClose
 } from "@/components/ui/sheet";
 import { MobileNav } from "./mobile-nav";
 import { useState } from "react";
@@ -37,6 +39,10 @@ export function SiteHeader() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left">
+                <SheetHeader>
+                    <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
+                    <SheetDescription className="sr-only">Main navigation links</SheetDescription>
+                </SheetHeader>
               <MobileNav onLinkClick={() => setIsMobileMenuOpen(false)} />
             </SheetContent>
           </Sheet>
