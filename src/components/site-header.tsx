@@ -3,6 +3,7 @@ import { Leaf, ShoppingBag, User } from "lucide-react";
 import { MainNav } from "@/components/main-nav";
 import { CartSheet } from "@/components/cart-sheet";
 import { Button } from "./ui/button";
+import { LanguageSwitcher } from "./language-switcher";
 
 export function SiteHeader() {
   return (
@@ -11,6 +12,7 @@ export function SiteHeader() {
         <MainNav />
         <div className="flex flex-1 items-center justify-end space-x-2">
           <nav className="flex items-center space-x-1">
+            <LanguageSwitcher />
             <Button variant="ghost" size="icon" asChild>
                 <Link href="/login">
                     <User className="h-5 w-5" />

@@ -1,3 +1,4 @@
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -6,33 +7,50 @@ import { getProducts } from '@/lib/data';
 import { PlaceHolderImages, getImage } from '@/lib/placeholder-images';
 import { Leaf, Waves, Thermometer, Droplets } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { useLanguage } from '@/providers/language-provider';
+import { useEffect, useState } from 'react';
+import { Product } from '@/lib/types';
 
 const features = [
   {
     icon: <Droplets className="h-8 w-8 text-primary" />,
-    title: "Unmatched Softness",
-    description: "Our double-gauze muslin gets softer with every wash, providing a gentle, luxurious feel against your skin."
+    titleKey: "featureSoftnessTitle",
+    descriptionKey: "featureSoftnessDescription"
   },
   {
     icon: <Waves className="h-8 w-8 text-primary" />,
-    title: "Exceptionally Breathable",
-    description: "The open weave of muslin allows for superior airflow, keeping you cool and comfortable in warmer weather."
+    titleKey: "featureBreathableTitle",
+    descriptionKey: "featureBreathableDescription"
   },
   {
     icon: <Thermometer className="h-8 w-8 text-primary" />,
-    title: "Naturally Regulating",
-    description: "Muslin is a lightweight insulator, helping you stay warm in the cool and cool in the heat."
+    titleKey: "featureRegulatingTitle",
+    descriptionKey: "featureRegulatingDescription"
   },
   {
     icon: <Leaf className="h-8 w-8 text-primary" />,
-    title: "Eco-Friendly & Sustainable",
-    description: "Made from natural fibers and colored with plant-based dyes, our fabric is kind to the earth."
+    titleKey: "featureEcoFriendlyTitle",
+    descriptionKey: "featureEcoFriendlyDescription"
   }
 ];
 
 
-export default async function Home() {
-  const products = await getProducts();
+export default function Home() {
+  const { dictionary } = useLanguage();
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const prods = await getProducts();
+      setProducts(prods);
+    };
+    fetchProducts();
+  }, []);
+
+  if (!dictionary || Object.keys(dictionary).length === 0) {
+    return <div>Loading...</div>; // Or a proper skeleton loader
+  }
+
   const featuredProducts = products.slice(0, 3);
   const heroImage = getImage('hero-1');
   const storyImage = getImage('story-1');
@@ -53,13 +71,13 @@ export default async function Home() {
         <div className="absolute inset-0 bg-black/40" />
         <div className="relative h-full flex flex-col items-center justify-center text-center p-4">
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold !font-headline mb-4 tracking-wider">
-            Embrace Softness, Naturally.
+            {dictionary.home.heroTitle}
           </h1>
           <p className="max-w-2xl text-lg md:text-xl font-body mb-8">
-            Discover the unparalleled comfort of Saru, our collection crafted from the finest muslin fabric for a gentle touch and breathable feel.
+            {dictionary.home.heroSubtitle}
           </p>
           <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
-            <Link href="/products">Shop The Collection</Link>
+            <Link href="/products">{dictionary.home.shopCollection}</Link>
           </Button>
         </div>
       </section>
@@ -67,9 +85,9 @@ export default async function Home() {
       <section className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-2">Featured Products</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-2">{dictionary.home.featuredProductsTitle}</h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
-              Handpicked for you, these pieces represent the best of Saru Story's comfort and style.
+              {dictionary.home.featuredProductsSubtitle}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -79,7 +97,7 @@ export default async function Home() {
           </div>
           <div className="text-center mt-12">
             <Button asChild variant="outline">
-              <Link href="/products">View All Products</Link>
+              <Link href="/products">{dictionary.home.viewAllProducts}</Link>
             </Button>
           </div>
         </div>
@@ -88,22 +106,22 @@ export default async function Home() {
       <section className="py-16 md:py-24 bg-secondary/50">
         <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold mb-2">The Magic of Muslin</h2>
+                <h2 className="text-3xl md:text-4xl font-bold mb-2">{dictionary.home.magicOfMuslinTitle}</h2>
                 <p className="text-muted-foreground max-w-xl mx-auto">
-                    More than just fabric, it's a feeling. Discover the qualities that make our muslin special.
+                    {dictionary.home.magicOfMuslinSubtitle}
                 </p>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature) => (
-              <Card key={feature.title} className="text-center border-0 bg-transparent shadow-none">
+              <Card key={feature.titleKey} className="text-center border-0 bg-transparent shadow-none">
                 <CardHeader>
                   <div className="mx-auto bg-primary/10 p-4 rounded-full w-fit mb-4">
                     {feature.icon}
                   </div>
-                  <CardTitle className="!font-headline text-xl">{feature.title}</CardTitle>
+                  <CardTitle className="!font-headline text-xl">{dictionary.home[feature.titleKey]}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">{feature.description}</p>
+                  <p className="text-muted-foreground">{dictionary.home[feature.descriptionKey]}</p>
                 </CardContent>
               </Card>
             ))}
@@ -114,12 +132,12 @@ export default async function Home() {
       <section className="relative py-20 md:py-32 bg-background">
         <div className="container mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
           <div className="text-center md:text-left">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">The Fabric of Our Lives</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{dictionary.home.fabricOfOurLivesTitle}</h2>
             <p className="text-lg text-muted-foreground mb-6">
-              Every thread tells a story of tradition, nature, and passion. Learn about our journey and the sustainable practices behind every garment.
+              {dictionary.home.fabricOfOurLivesSubtitle}
             </p>
             <Button asChild size="lg" variant="default">
-              <Link href="/story">Our Story</Link>
+              <Link href="/story">{dictionary.home.ourStory}</Link>
             </Button>
           </div>
           <div className="relative h-64 md:h-96 rounded-lg overflow-hidden shadow-xl">
