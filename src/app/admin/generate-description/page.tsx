@@ -84,7 +84,7 @@ export default function GenerateDescriptionPage() {
                   <FormItem><FormLabel>Target Audience</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField control={form.control} name="styleKeywords" render={({ field }) => (
-                  <FormItem><FormLabel>Style Keywords</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></Formian>
+                  <FormItem><FormLabel>Style Keywords</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                 
                 <Button type="submit" className="w-full" disabled={isLoading}>
