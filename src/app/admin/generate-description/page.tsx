@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const formSchema = z.object({
   productName: z.string().min(1, 'Product name is required.'),
@@ -83,7 +84,7 @@ export default function GenerateDescriptionPage() {
                   <FormItem><FormLabel>Target Audience</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField control={form.control} name="styleKeywords" render={({ field }) => (
-                  <FormItem><FormLabel>Style Keywords</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                  <FormItem><FormLabel>Style Keywords</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></Formian>
                 )} />
                 
                 <Button type="submit" className="w-full" disabled={isLoading}>

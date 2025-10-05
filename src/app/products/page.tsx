@@ -13,12 +13,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from '@/components/ui/skeleton';
+import { useLanguage } from '@/providers/language-provider';
 
 // Since we are fetching data client-side for filtering, we need a wrapper
 function ProductGrid() {
   const searchParams = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { dictionary } = useLanguage();
 
   const [colorFilter, setColorFilter] = useState('all');
   const [sizeFilter, setSizeFilter] = useState('all');
@@ -49,30 +51,34 @@ function ProductGrid() {
   const allColors = useMemo(() => ['all', ...Array.from(new Set(products.flatMap(p => p.colors.map(c => c.name))))], [products]);
   const allSizes = useMemo(() => ['all', ...Array.from(new Set(products.flatMap(p => p.sizes)))], [products]);
 
+  if (!dictionary?.products) {
+    return null;
+  }
+
   return (
     <div className="container mx-auto px-4 py-16">
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold">Our Collection</h1>
-        <p className="text-muted-foreground mt-2">Discover pieces designed for comfort and timeless style.</p>
+        <h1 className="text-4xl font-bold">{dictionary.products.title}</h1>
+        <p className="text-muted-foreground mt-2">{dictionary.products.subtitle}</p>
       </div>
 
       <div className="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-          <SelectTrigger><SelectValue placeholder="Filter by category" /></SelectTrigger>
+          <SelectTrigger><SelectValue placeholder={dictionary.products.filterCategory} /></SelectTrigger>
           <SelectContent>
-            {allCategories.map(cat => <SelectItem key={cat} value={cat}>{cat === 'all' ? 'All Categories' : cat}</SelectItem>)}
+            {allCategories.map(cat => <SelectItem key={cat} value={cat}>{cat === 'all' ? dictionary.products.allCategories : cat}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={colorFilter} onValueChange={setColorFilter}>
-          <SelectTrigger><SelectValue placeholder="Filter by color" /></SelectTrigger>
+          <SelectTrigger><SelectValue placeholder={dictionary.products.filterColor} /></SelectTrigger>
           <SelectContent>
-            {allColors.map(color => <SelectItem key={color} value={color}>{color === 'all' ? 'All Colors' : color}</SelectItem>)}
+            {allColors.map(color => <SelectItem key={color} value={color}>{color === 'all' ? dictionary.products.allColors : color}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={sizeFilter} onValueChange={setSizeFilter}>
-          <SelectTrigger><SelectValue placeholder="Filter by size" /></SelectTrigger>
+          <SelectTrigger><SelectValue placeholder={dictionary.products.filterSize} /></SelectTrigger>
           <SelectContent>
-            {allSizes.map(size => <SelectItem key={size} value={size}>{size === 'all' ? 'All Sizes' : size}</SelectItem>)}
+            {allSizes.map(size => <SelectItem key={size} value={size}>{size === 'all' ? dictionary.products.allSizes : size}</SelectItem>)}
           </SelectContent>
         </Select>
       </div>
@@ -98,7 +104,7 @@ function ProductGrid() {
       )}
        { !isLoading && filteredProducts.length === 0 && (
           <div className="text-center col-span-full py-16">
-            <p className="text-muted-foreground">No products found matching your criteria.</p>
+            <p className="text-muted-foreground">{dictionary.products.noProductsFound}</p>
           </div>
         )}
     </div>

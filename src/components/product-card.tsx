@@ -1,3 +1,4 @@
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Product } from '@/lib/types';
@@ -5,6 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Button } from '@/components/ui/button';
 import { Badge } from './ui/badge';
 import { getImage } from '@/lib/placeholder-images';
+import { useLanguage } from '@/providers/language-provider';
 
 interface ProductCardProps {
   product: Product;
@@ -12,6 +14,11 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const primaryImage = getImage(product.images[0]);
+  const { dictionary } = useLanguage();
+
+  if (!dictionary?.productCard) {
+    return null;
+  }
 
   return (
     <Card className="flex flex-col h-full overflow-hidden transition-shadow duration-300 hover:shadow-2xl rounded-none">
@@ -39,7 +46,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <CardFooter className="p-4 pt-0 flex justify-between items-center">
             <p className="text-lg font-semibold">${product.price.toFixed(2)}</p>
             <Button asChild size="sm" variant="outline" className="rounded-none">
-                <Link href={`/products/${product.id}`}>View Details</Link>
+                <Link href={`/products/${product.id}`}>{dictionary.productCard.viewDetails}</Link>
             </Button>
         </CardFooter>
     </Card>

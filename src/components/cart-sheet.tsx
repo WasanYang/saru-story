@@ -17,9 +17,15 @@ import {
 import { ScrollArea } from './ui/scroll-area';
 import { Separator } from './ui/separator';
 import { getImage } from '@/lib/placeholder-images';
+import { useLanguage } from '@/providers/language-provider';
 
 export function CartSheet() {
   const { cartItems, removeFromCart, updateQuantity, cartCount, cartTotal } = useCart();
+  const { dictionary } = useLanguage();
+
+  if (!dictionary?.cart) {
+    return null;
+  }
 
   return (
     <Sheet>
@@ -33,12 +39,12 @@ export function CartSheet() {
               </span>
             )}
           </div>
-          <span className="sr-only">Open Cart</span>
+          <span className="sr-only">{dictionary.cart.openCart}</span>
         </Button>
       </SheetTrigger>
       <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg">
         <SheetHeader className="px-6">
-          <SheetTitle>Shopping Cart ({cartCount})</SheetTitle>
+          <SheetTitle>{dictionary.cart.title} ({cartCount})</SheetTitle>
         </SheetHeader>
         <Separator />
         {cartCount > 0 ? (
@@ -64,7 +70,7 @@ export function CartSheet() {
                       <div className="flex-1">
                         <h3 className="font-semibold">{item.name}</h3>
                         <p className="text-sm text-muted-foreground">
-                          Size: {item.selectedSize} / Color: {item.selectedColor}
+                          {dictionary.cart.size}: {item.selectedSize} / {dictionary.cart.color}: {item.selectedColor}
                         </p>
                         <p className="font-semibold mt-1">
                           ${item.price.toFixed(2)}
@@ -108,13 +114,13 @@ export function CartSheet() {
             <Separator />
             <SheetFooter className="p-6 sm:flex-col sm:items-stretch sm:gap-4">
                 <div className="flex justify-between text-lg font-semibold">
-                    <span>Subtotal</span>
+                    <span>{dictionary.cart.subtotal}</span>
                     <span>${cartTotal.toFixed(2)}</span>
                 </div>
-                <p className="text-sm text-muted-foreground text-center">Shipping & taxes calculated at checkout.</p>
+                <p className="text-sm text-muted-foreground text-center">{dictionary.cart.shippingTaxes}</p>
                 <SheetClose asChild>
                     <Button asChild size="lg">
-                        <Link href="/checkout">Proceed to Checkout</Link>
+                        <Link href="/checkout">{dictionary.cart.checkout}</Link>
                     </Button>
                 </SheetClose>
             </SheetFooter>
@@ -122,10 +128,10 @@ export function CartSheet() {
         ) : (
           <div className="flex h-full flex-col items-center justify-center gap-4">
             <ShoppingBag className="h-16 w-16 text-muted-foreground" />
-            <p className="text-muted-foreground">Your cart is empty.</p>
+            <p className="text-muted-foreground">{dictionary.cart.empty}</p>
             <SheetClose asChild>
               <Button asChild variant="outline">
-                <Link href="/products">Continue Shopping</Link>
+                <Link href="/products">{dictionary.cart.continueShopping}</Link>
               </Button>
             </SheetClose>
           </div>

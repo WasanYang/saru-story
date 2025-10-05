@@ -16,9 +16,11 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { useLanguage } from '@/providers/language-provider';
 
 export function ProductClientContent({ product }: { product: Product }) {
   const { addToCart } = useCart();
+  const { dictionary } = useLanguage();
   
   const [selectedSize, setSelectedSize] = useState<string>(product.sizes[0]);
   const [selectedColor, setSelectedColor] = useState<string>(product.colors[0].name);
@@ -28,6 +30,10 @@ export function ProductClientContent({ product }: { product: Product }) {
       addToCart(product, 1, selectedSize, selectedColor);
     }
   };
+
+  if (!dictionary?.product) {
+    return null;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-16">
@@ -66,7 +72,7 @@ export function ProductClientContent({ product }: { product: Product }) {
           <p className="text-foreground/80 font-body leading-relaxed">{product.description}</p>
           
           <div>
-            <h3 className="text-sm font-medium mb-2">Color: <span className="font-normal text-muted-foreground">{selectedColor}</span></h3>
+            <h3 className="text-sm font-medium mb-2">{dictionary.product.color}: <span className="font-normal text-muted-foreground">{selectedColor}</span></h3>
             <RadioGroup
               value={selectedColor}
               onValueChange={setSelectedColor}
@@ -87,7 +93,7 @@ export function ProductClientContent({ product }: { product: Product }) {
           </div>
 
           <div>
-            <h3 className="text-sm font-medium mb-2">Size</h3>
+            <h3 className="text-sm font-medium mb-2">{dictionary.product.size}</h3>
             <RadioGroup
               value={selectedSize}
               onValueChange={setSelectedSize}
@@ -112,7 +118,7 @@ export function ProductClientContent({ product }: { product: Product }) {
           </div>
 
           <Button onClick={handleAddToCart} size="lg" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-            Add to Cart
+            {dictionary.product.addToCart}
           </Button>
         </div>
       </div>

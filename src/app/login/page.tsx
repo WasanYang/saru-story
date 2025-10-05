@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { useLanguage } from '@/providers/language-provider';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -23,6 +24,7 @@ const formSchema = z.object({
 });
 
 export default function LoginPage() {
+  const { dictionary } = useLanguage();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,12 +39,16 @@ export default function LoginPage() {
     alert('Login functionality not implemented.');
   }
 
+  if (!dictionary?.login) {
+    return null;
+  }
+
   return (
     <div className="container mx-auto flex min-h-[calc(100vh-8rem)] items-center justify-center px-4 py-16">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Welcome Back</CardTitle>
-          <CardDescription>Enter your email below to login to your account</CardDescription>
+          <CardTitle className="text-2xl">{dictionary.login.title}</CardTitle>
+          <CardDescription>{dictionary.login.subtitle}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -52,7 +58,7 @@ export default function LoginPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{dictionary.login.email}</FormLabel>
                     <FormControl>
                       <Input placeholder="name@example.com" {...field} />
                     </FormControl>
@@ -65,7 +71,7 @@ export default function LoginPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>{dictionary.login.password}</FormLabel>
                     <FormControl>
                       <Input type="password" placeholder="••••••••" {...field} />
                     </FormControl>
@@ -74,14 +80,14 @@ export default function LoginPage() {
                 )}
               />
               <Button type="submit" className="w-full">
-                Sign In
+                {dictionary.login.signIn}
               </Button>
             </form>
           </Form>
           <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{' '}
+            {dictionary.login.noAccount}{' '}
             <Link href="/register" className="underline hover:text-primary">
-              Sign up
+              {dictionary.login.signUp}
             </Link>
           </div>
         </CardContent>

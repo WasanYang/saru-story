@@ -1,8 +1,16 @@
+'use client';
 import { Leaf, Twitter, Instagram, Facebook } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from './ui/button';
+import { useLanguage } from '@/providers/language-provider';
 
 export function SiteFooter() {
+  const { dictionary } = useLanguage();
+
+  if (!dictionary?.footer) {
+    return null;
+  }
+
   return (
     <footer className="bg-secondary/50">
       <div className="container mx-auto px-4 py-12">
@@ -13,46 +21,46 @@ export function SiteFooter() {
               <span className="font-bold font-headline text-lg">Saru Story</span>
             </Link>
             <p className="text-sm text-muted-foreground text-center md:text-left">
-              Crafting comfort with natural muslin fabrics.
+              {dictionary.footer.tagline}
             </p>
           </div>
           <div>
-            <h3 className="font-semibold mb-4 font-headline">Shop</h3>
+            <h3 className="font-semibold mb-4 font-headline">{dictionary.footer.shop}</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/products" className="text-sm text-muted-foreground hover:text-primary">
-                  All Products
+                  {dictionary.footer.allProducts}
                 </Link>
               </li>
               <li>
                 <Link href="/products?category=shirts" className="text-sm text-muted-foreground hover:text-primary">
-                  Shirts
+                  {dictionary.footer.shirts}
                 </Link>
               </li>
               <li>
                 <Link href="/products?category=dresses" className="text-sm text-muted-foreground hover:text-primary">
-                  Dresses
+                  {dictionary.footer.dresses}
                 </Link>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold mb-4 font-headline">About</h3>
+            <h3 className="font-semibold mb-4 font-headline">{dictionary.footer.about}</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/story" className="text-sm text-muted-foreground hover:text-primary">
-                  Our Story
+                  {dictionary.footer.ourStory}
                 </Link>
               </li>
               <li>
                 <Link href="/why-saru" className="text-sm text-muted-foreground hover:text-primary">
-                  Why Saru?
+                  {dictionary.footer.whySaru}
                 </Link>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold mb-4 font-headline">Follow Us</h3>
+            <h3 className="font-semibold mb-4 font-headline">{dictionary.footer.followUs}</h3>
             <div className="flex space-x-2">
               <Button variant="ghost" size="icon" asChild>
                 <a href="#" aria-label="Twitter">
@@ -73,7 +81,7 @@ export function SiteFooter() {
           </div>
         </div>
         <div className="mt-8 border-t pt-6 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Saru Story. All Rights Reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Saru Story. {dictionary.footer.rightsReserved}</p>
         </div>
       </div>
     </footer>
