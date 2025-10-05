@@ -1,70 +1,19 @@
-/**
- * @fileoverview Firestore Security Rules for the application.
- *
- * Core Philosophy:
- * This ruleset enforces a strict user-ownership model.  Users can only read and write their own data.
- *
- * Data Structure:
- * - User profiles are stored in `/users/{userId}`.
- * - Shipping addresses are stored in `/users/{userId}/addresses/{addressId}`.
- *
- * Key Security Decisions:
- * - Users can only manage their own profile and addresses. Listing all users is disallowed.
- * - `create` operations on `/users/{userId}` are allowed only if the `userId` matches the authenticated user's ID.
- * - Data validation is minimal in this prototyping phase, focusing on relational integrity and ownership.
- * - Denormalization: There is no denormalization in this ruleset.
- */
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    /**
-     * @description Controls access to user profile documents.
-     * @path /users/{userId}
-     * @allow (create) - If the user ID in the path matches the authenticated user's ID.
-     * @allow (get, update, delete) - If the user ID in the path matches the authenticated user's ID.
-     * @deny (list) - Listing all users is not allowed.
-     * @deny (create) - If the user ID in the path does not match the authenticated user's ID.
-     * @deny (get, update, delete) - If the user ID in the path does not match the authenticated user's ID.
-     * @principle Enforces document ownership for profile management.
-     */
-    match /users/{userId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      function isOwner(userId) {
-        return request.auth.uid == userId;
-      }
-
-      allow get: if isSignedIn() && isOwner(userId);
-      allow list: if false;
-      allow create: if isSignedIn() && isOwner(userId);
-      allow update: if isSignedIn() && isOwner(userId);
-      allow delete: if isSignedIn() && isOwner(userId);
-    }
-
-    /**
-     * @description Controls access to user shipping addresses.
-     * @path /users/{userId}/addresses/{addressId}
-     * @allow (create, get, update, delete, list) - If the user ID in the path matches the authenticated user's ID.
-     * @deny (create, get, update, delete, list) - If the user ID in the path does not match the authenticated user's ID.
-     * @principle Enforces document ownership for address management.
-     */
-    match /users/{userId}/addresses/{addressId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      function isOwner(userId) {
-        return request.auth.uid == userId;
-      }
-
-      allow get: if isSignedIn() && isOwner(userId);
-      allow list: if isSignedIn() && isOwner(userId);
-      allow create: if isSignedIn() && isOwner(userId);
-      allow update: if isSignedIn() && isOwner(userId);
-      allow delete: if isSignedIn() && isOwner(userId);
+    // This rule allows anyone with your Firestore database reference to view, edit,
+    // and delete all data in your Firestore database. It is useful for getting
+    // started, but it is configured to expire after 30 days because it
+    // leaves your app open to attackers. At that time, all client
+    // requests to your Firestore database will be denied.
+    //
+    // Make sure to write security rules for your app before that time, or else
+    // all client requests to your Firestore database will be denied until you Update
+    // your rules
+    match /{document=**} {
+      allow read, write: if request.time < timestamp.date(2025, 11, 4);
     }
   }
 }
