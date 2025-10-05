@@ -62,9 +62,11 @@ function ProfileForm() {
   });
 
   useEffect(() => {
-    if (userProfile) {
+    // Only reset the form if it hasn't been touched by the user yet.
+    // This prevents overwriting user input or causing a loop on save.
+    if (userProfile && !form.formState.isDirty) {
       form.reset(userProfile);
-    } else if(user){
+    } else if(user && !form.formState.isDirty){
         form.reset({
             fullName: user.displayName || '',
             address: '',
@@ -73,7 +75,7 @@ function ProfileForm() {
             country: '',
         })
     }
-  }, [userProfile, user, form.reset]);
+  }, [userProfile, user, form]);
 
   async function onSubmit(values: ProfileFormData) {
     if (!userProfileRef) return;
