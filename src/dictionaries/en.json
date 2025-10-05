@@ -72,15 +72,21 @@
     "noProductsFound": "No products found matching your criteria."
   },
   "story": {
-    "title": "A Love Affair with Muslin",
-    "subtitle": "It's not just fabric. It’s a feeling of home.",
-    "p1": "Our story isn’t a business plan. It's a love story. A story that begins with the simple, undeniable pleasure of being wrapped in something truly soft, something that breathes with you. It’s the feeling of a lazy Sunday morning, a warm hug, the gentle comfort you’ve always known. That’s muslin. That’s Saru.",
-    "h2_1": "A Sensory Journey",
-    "p2": "We fell in love with muslin not for what it is, but for how it makes us feel. The way its open weave allows air to kiss the skin, making it a companion for every season. The incredible transformation it undergoes, becoming softer and more personal with every wash, telling a story on its very threads.",
-    "p3": "This isn't fast fashion. It's slow living. It's choosing a garment that becomes a part of your life, a reliable friend that offers comfort without asking for anything in return.",
-    "h2_2": "More Than Clothing, It's a Choice",
-    "p4": "Our passion extends to how each piece is created. We chose to work with artisans who share our reverence for the craft, whose hands carry generations of knowledge. We use natural dyes that give our fabrics their gentle, earthy tones, ensuring that what touches your skin is as pure and kind as nature itself.",
-    "p5": "Choosing Saru is choosing to slow down. It's an invitation to find beauty in simplicity, to value comfort as a form of self-care, and to wear a piece of a story woven with passion, integrity, and a deep love for the simple magic of muslin."
+    "title": "Woven with Passion",
+    "subtitle": "It's not just fabric. It’s a feeling of home, a connection to nature, a story of love.",
+    "introTitle": "Our Love Affair with Muslin",
+    "introP1": "Our story isn’t a business plan. It's a love story. A story that begins with the simple, undeniable pleasure of being wrapped in something truly soft, something that breathes with you. It’s the feeling of a lazy Sunday morning, a warm hug, the gentle comfort you’ve always known. That’s muslin. That’s Saru.",
+    "section1Title": "A Sensory Journey",
+    "section1p1": "We fell in love with muslin not for what it is, but for how it makes us feel. The way its open weave allows air to kiss the skin, making it a companion for every season.",
+    "section1p2": "It’s the incredible transformation it undergoes, becoming softer and more personal with every wash, telling a story on its very threads. This isn't fast fashion. It's slow living. It's choosing a garment that becomes a part of your life, a reliable friend that offers comfort without asking for anything in return.",
+    "section2Title": "From Nature, With Care",
+    "section2p1": "Our passion extends to how each piece is created. We chose to work with artisans who share our reverence for the craft, whose hands carry generations of knowledge.",
+    "section2p2": "We use natural, plant-based dyes that give our fabrics their gentle, earthy tones, ensuring that what touches your skin is as pure and kind as nature itself. Each fiber is a testament to a slower, more thoughtful way of life.",
+    "section3Title": "More Than Clothing, It's a Choice",
+    "section3p1": "In a world of constant noise and speed, we seek out the quiet moments, the simple joys. Wearing Saru is an act of choosing that simplicity. It's an invitation to find beauty in imperfection, to value comfort as a form of self-care.",
+    "section3p2": "It's about feeling connected—to your body, to the planet, and to the hands that crafted your garment. It's a quiet rebellion against the disposable, and a celebration of things made to last, to be loved, and to be lived in.",
+    "outroTitle": "Wear Your Story",
+    "outroP1": "Choosing Saru is choosing to wear a piece of a story woven with passion, integrity, and a deep love for the simple magic of muslin. We invite you to join us on this journey, to wrap yourself in comfort, and to make our story a part of yours."
   },
   "whySaru": {
     "title": "Why Saru?",

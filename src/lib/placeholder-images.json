@@ -8,9 +8,27 @@
     },
     {
       "id": "story-1",
-      "description": "Hands of a local artisan carefully weaving fabric on a traditional loom.",
+      "description": "A woman in a white muslin dress walks through a field of tall grass at sunset, embodying a connection with nature.",
+      "imageUrl": "https://images.unsplash.com/photo-1551890333-34538128522e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3b21hbiUyMGluJTIwd2hpdGUlMjBkcmVzcyUyMGZpZWxkfGVufDB8fHx8MTc2MDA0MjM4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman field"
+    },
+    {
+      "id": "story-2",
+      "description": "A woman wearing an airy muslin dress stands joyfully in a vibrant field of colorful wildflowers.",
+      "imageUrl": "https://images.unsplash.com/photo-1591035183828-552655325608?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3b21hbiUyMGZsb3dlciUyMGZpZWxkfGVufDB8fHx8MTc2MDA0MTgxMHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman flowers"
+    },
+    {
+      "id": "story-3",
+      "description": "Hands of an artisan gently holding a piece of soft, naturally dyed muslin fabric, highlighting its handmade quality.",
       "imageUrl": "https://images.unsplash.com/photo-1699823891919-75016a04207d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxhcnRpc2FuJTIwY3JhZnR8ZW58MHx8fHwxNzU5NTczMzkwfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "artisan craft"
+    },
+    {
+      "id": "story-4",
+      "description": "A couple laughing together, both wearing comfortable muslin clothing, enjoying a simple, happy moment outdoors.",
+      "imageUrl": "https://images.unsplash.com/photo-1563240381-d414738c8577?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjb3VwbGUlMjBwaWNuaWMlMjBsYXVnaGluZ3xlbnwwfHx8fDE3NjAwNDI2MjJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "couple laughing"
     },
     {
       "id": "why-saru-1",
@@ -183,7 +201,7 @@
     {
       "id": "product-throw-2",
       "description": "A close up of a natural colored muslin throw blanket.",
-      "imageUrl": "https://images.unsplash.com/photo-1617025828452-f07019a41639?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtdXNsaW4lMjBiZWRkaW5nfGVufDB8fHx8MTc1OTY3OTQyMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1617025828452-f07019a41639?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtdXNsaW4lMjBiZWRkaW5nfGVufDB8fHx8MTc1OTY3OTQyMXww&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "fabric texture"
     },
     {
@@ -195,67 +213,67 @@
     {
       "id": "product-toddler-pjs-2",
       "description": "A pair of starry print toddler pajamas folded.",
-      "imageUrl": "https://images.unsplash.com/photo-1614951649392-3316d87aca2d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxraWRzJTIwcGFqYW1hc3xlbnwwfHx8fDE3NTk2ODAyMzV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1614951649392-3316d87aca2d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxraWRzJTIwcGFqYW1hc3xlbnwwfHx8fDE3NTk2ODAyMzV8MA&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "kids pajamas"
     },
     {
       "id": "product-kimono-1",
       "description": "A person wearing a luxurious ivory muslin kimono robe.",
-      "imageUrl": "https://images.unsplash.com/photo-1616599518338-d37442385514?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxraW1vbm8lMjByb2JlfGVufDB8fHx8MTc1OTY4MDI4Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1616599518338-d37442385514?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxraW1vbm8lMjByb2JlfGVufDB8fHx8MTc1OTY4MDI4Mnww&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "kimono robe"
     },
     {
       "id": "product-kimono-2",
       "description": "A light gray muslin kimono robe hanging on a hook.",
-      "imageUrl": "https://images.unsplash.com/photo-1611701389445-31626f043063?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxiYXRocm9iZXxlbnwwfHx8fDE3NTk2ODAzMjF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1611701389445-31626f043063?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxiYXRocm9iZXxlbnwwfHx8fDE3NTk2ODAzMjF8MA&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "bathrobe"
     },
     {
       "id": "product-wrap-skirt-1",
       "description": "A woman wearing a sienna colored muslin wrap skirt.",
-      "imageUrl": "https://images.unsplash.com/photo-1594744806422-72138a097365?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3cmFwJTIwc2tpcnR8ZW58MHx8fHwxNzU5NjgwMzYwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1594744806422-72138a097365?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3cmFwJTIwc2tpcnR8ZW58MHx8fHwxNzU5NjgwMzYwfDA&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "wrap skirt"
     },
     {
       "id": "product-wrap-skirt-2",
       "description": "A black muslin wrap skirt on a hanger.",
-      "imageUrl": "https://images.unsplash.com/photo-1590480876732-6a171b36209c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxibGFjayUyMHNraXJ0fGVufDB8fHx8MTc1OTY4MDM5NHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1590480876732-6a171b36209c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxibGFjayUyMHNraXJ0fGVufDB8fHx8MTc1OTY4MDM5NHww&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "black skirt"
     },
     {
       "id": "product-blouse-1",
       "description": "A woman wearing a white muslin blouse with poet sleeves.",
-      "imageUrl": "https://images.unsplash.com/photo-1621335829944-1454519941a3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3aGl0ZSUyMGJsb3VzZXxlbnwwfHx8fDE3NTk2ODA0MzJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1621335829944-1454519941a3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3aGl0ZSUyMGJsb3VzZXxlbnwwfHx8fDE3NTk2ODA0MzJ8MA&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "white blouse"
     },
     {
       "id": "product-blouse-2",
       "description": "A close up of the sleeve detail on a blush pink blouse.",
-      "imageUrl": "https://images.unsplash.com/photo-1589849269879-1d4a04533b3a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwaW5rJTIwYmxvdXNlfGVufDB8fHx8MTc1OTY4MDQ2NHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1589849269879-1d4a04533b3a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwaW5rJTIwYmxvdXNlfGVufDB8fHx8MTc1OTY4MDQ2NHww&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "pink blouse"
     },
     {
       "id": "product-cushion-1",
       "description": "An olive green muslin cushion cover on a sofa.",
-      "imageUrl": "https://images.unsplash.com/photo-1617025828452-f07019a41639?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtdXNsaW4lMjBiZWRkaW5nfGVufDB8fHx8MTc1OTY3OTQyMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1617025828452-f07019a41639?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtdXNsaW4lMjBiZWRkaW5nfGVufDB8fHx8MTc1OTY3OTQyMXww&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "muslin cushion"
     },
     {
       "id": "product-cushion-2",
       "description": "A sand colored muslin cushion cover.",
-      "imageUrl": "https://images.unsplash.com/photo-1616627561821-6c173e618e47?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtdXNsaW4lMjBiZWRkaW5nfGVufDB8fHx8MTc1OTY3OTQyMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1616627561821-6c173e618e47?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtdXNsaW4lMjBiZWRkaW5nfGVufDB8fHx8MTc1OTY3OTQyMXww&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "sand cushion"
     },
     {
       "id": "product-kids-dress-1",
       "description": "A little girl twirling in a mustard yellow muslin dress.",
-      "imageUrl": "https://images.unsplash.com/photo-1552834394-17c376510363?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxraWRzJTIwZHJlc3N8ZW58MHx8fHwxNzU5NjgwNTc3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1552834394-17c376510363?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxraWRzJTIwZHJlc3N8ZW58MHx8fHwxNzU5NjgwNTc3fDA&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "kids dress"
     },
     {
       "id": "product-kids-dress-2",
       "description": "A sky blue kids dress on a small hanger.",
-      "imageUrl": "https://images.unsplash.com/photo-1622285642935-a694a5e38d4f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxraWRzJTIwcm9tcGVyfGVufDB8fHx8MTc1OTY3OTI5Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1622285642935-a694a5e38d4f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxraWRzJTIwcm9tcGVyfGVufDB8fHx8MTc1OTY3OTI5Nnww&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "blue dress"
     }
   ]
