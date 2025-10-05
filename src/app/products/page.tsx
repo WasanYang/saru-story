@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/providers/language-provider';
+import { Filter } from 'lucide-react';
 
 // Since we are fetching data client-side for filtering, we need a wrapper
 function ProductGrid() {
@@ -57,37 +58,47 @@ function ProductGrid() {
 
   return (
     <div className="container mx-auto px-4 py-16">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold">{dictionary.products.title}</h1>
-        <p className="text-muted-foreground mt-2">{dictionary.products.subtitle}</p>
+      <div className="bg-secondary/30 rounded-lg p-8 mb-12">
+        <div className="text-center">
+            <h1 className="text-4xl md:text-5xl font-bold">{dictionary.products.title}</h1>
+            <p className="text-muted-foreground mt-2 max-w-xl mx-auto">{dictionary.products.subtitle}</p>
+        </div>
       </div>
 
-      <div className="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-          <SelectTrigger><SelectValue placeholder={dictionary.products.filterCategory} /></SelectTrigger>
-          <SelectContent>
-            {allCategories.map(cat => <SelectItem key={cat} value={cat}>{cat === 'all' ? dictionary.products.allCategories : cat}</SelectItem>)}
-          </SelectContent>
-        </Select>
-        <Select value={colorFilter} onValueChange={setColorFilter}>
-          <SelectTrigger><SelectValue placeholder={dictionary.products.filterColor} /></SelectTrigger>
-          <SelectContent>
-            {allColors.map(color => <SelectItem key={color} value={color}>{color === 'all' ? dictionary.products.allColors : color}</SelectItem>)}
-          </SelectContent>
-        </Select>
-        <Select value={sizeFilter} onValueChange={setSizeFilter}>
-          <SelectTrigger><SelectValue placeholder={dictionary.products.filterSize} /></SelectTrigger>
-          <SelectContent>
-            {allSizes.map(size => <SelectItem key={size} value={size}>{size === 'all' ? dictionary.products.allSizes : size}</SelectItem>)}
-          </SelectContent>
-        </Select>
+      <div className="mb-10 p-4 border rounded-lg bg-secondary/30">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+          <div className="col-span-1 md:col-span-1 flex items-center gap-2 font-semibold">
+            <Filter className="w-5 h-5"/>
+            <span>Filters</span>
+          </div>
+          <div className="col-span-1 md:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger><SelectValue placeholder={dictionary.products.filterCategory} /></SelectTrigger>
+              <SelectContent>
+                {allCategories.map(cat => <SelectItem key={cat} value={cat}>{cat === 'all' ? dictionary.products.allCategories : cat}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={colorFilter} onValueChange={setColorFilter}>
+              <SelectTrigger><SelectValue placeholder={dictionary.products.filterColor} /></SelectTrigger>
+              <SelectContent>
+                {allColors.map(color => <SelectItem key={color} value={color}>{color === 'all' ? dictionary.products.allColors : color}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={sizeFilter} onValueChange={setSizeFilter}>
+              <SelectTrigger><SelectValue placeholder={dictionary.products.filterSize} /></SelectTrigger>
+              <SelectContent>
+                {allSizes.map(size => <SelectItem key={size} value={size}>{size === 'all' ? dictionary.products.allSizes : size}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
       </div>
 
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="flex flex-col space-y-3">
-              <Skeleton className="h-[300px] w-full rounded-lg" />
+              <Skeleton className="h-[400px] w-full" />
               <div className="space-y-2">
                 <Skeleton className="h-4 w-3/4" />
                 <Skeleton className="h-4 w-1/2" />
@@ -104,7 +115,7 @@ function ProductGrid() {
       )}
        { !isLoading && filteredProducts.length === 0 && (
           <div className="text-center col-span-full py-16">
-            <p className="text-muted-foreground">{dictionary.products.noProductsFound}</p>
+            <p className="text-muted-foreground text-lg">{dictionary.products.noProductsFound}</p>
           </div>
         )}
     </div>
